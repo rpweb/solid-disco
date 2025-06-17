@@ -1,5 +1,6 @@
 import type { RxJsonSchema } from "rxdb";
 import type { RxUserDocumentType, RxTaskDocumentType } from "@/types/db.types";
+import { CHECKLIST_STATUS } from "@/types/db.types";
 
 export const userSchema: RxJsonSchema<RxUserDocumentType> = {
   version: 0,
@@ -71,13 +72,7 @@ export const taskSchema: RxJsonSchema<RxTaskDocumentType> = {
           },
           status: {
             type: "string",
-            enum: [
-              "not-started",
-              "in-progress",
-              "blocked",
-              "final-check",
-              "done",
-            ],
+            enum: Object.values(CHECKLIST_STATUS),
           },
         },
         required: ["id", "text", "status"],
