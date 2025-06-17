@@ -41,7 +41,7 @@ export const FloorPlan: React.FC = () => {
       {/* Floor plan container */}
       <div
         ref={containerRef}
-        className={`relative bg-gray-100 rounded-lg overflow-hidden shadow-inner ${
+        className={`relative bg-gray-100 rounded-lg shadow-inner ${
           isAddingTask ? "cursor-crosshair" : "cursor-default"
         }`}
         style={{ paddingBottom: "60%" }} // Maintain aspect ratio
