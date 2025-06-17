@@ -134,14 +134,91 @@ describe("useTaskDetails", () => {
     expect(mockUpdateTask).toHaveBeenCalledWith("1", {
       checklist: [
         ...mockTask.checklist,
-        expect.objectContaining({
+        {
+          id: expect.any(String),
           text: "New checklist item",
           status: "not-started",
-          id: expect.any(String),
-        }),
+        },
       ],
     });
+
     expect(result.current.newItemText).toBe("");
+    expect(result.current.showNewItemInput).toBe(false);
+  });
+
+  it("shows and hides new item input", () => {
+    const { result } = renderHook(() => useTaskDetails());
+
+    expect(result.current.showNewItemInput).toBe(false);
+
+    act(() => {
+      result.current.handleShowNewItemInput();
+    });
+
+    expect(result.current.showNewItemInput).toBe(true);
+
+    act(() => {
+      result.current.handleCancelNewItem();
+    });
+
+    expect(result.current.showNewItemInput).toBe(false);
+    expect(result.current.newItemText).toBe("");
+  });
+
+  it("cancels new item and clears text", () => {
+    const { result } = renderHook(() => useTaskDetails());
+
+    act(() => {
+      result.current.handleShowNewItemInput();
+      result.current.setNewItemText("Some text");
+    });
+
+    expect(result.current.showNewItemInput).toBe(true);
+    expect(result.current.newItemText).toBe("Some text");
+
+    act(() => {
+      result.current.handleCancelNewItem();
+    });
+
+    expect(result.current.showNewItemInput).toBe(false);
+    expect(result.current.newItemText).toBe("");
+  });
+
+  it("focuses input when showing new item input", () => {
+    const { result } = renderHook(() => useTaskDetails());
+
+    // Create a mock input element
+    const mockInput = document.createElement("input");
+    const focusSpy = vi.spyOn(mockInput, "focus");
+
+    // Set the ref
+    Object.defineProperty(result.current.newItemInputRef, "current", {
+      writable: true,
+      value: mockInput,
+    });
+
+    act(() => {
+      result.current.handleShowNewItemInput();
+    });
+
+    expect(focusSpy).toHaveBeenCalled();
+  });
+
+  it("clears new item input when closing modal", () => {
+    const { result } = renderHook(() => useTaskDetails());
+
+    act(() => {
+      result.current.handleShowNewItemInput();
+      result.current.setNewItemText("Some text");
+    });
+
+    act(() => {
+      result.current.handleClose();
+    });
+
+    expect(result.current.showNewItemInput).toBe(false);
+    expect(result.current.newItemText).toBe("");
+    expect(mockSetSelectedTaskId).toHaveBeenCalledWith(null);
   });
 
   it("does not add empty checklist item", async () => {

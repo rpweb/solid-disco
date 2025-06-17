@@ -33,27 +33,27 @@ describe("ChecklistItem", () => {
     const user = userEvent.setup();
     render(<ChecklistItem {...mockProps} />);
 
-    const statusButton = screen.getByRole("button", { name: "○" });
+    const statusButton = screen.getByRole("button", { name: /change status/i });
     await user.click(statusButton);
 
     expect(screen.getByText("Not started")).toBeInTheDocument();
     expect(screen.getByText("In Progress")).toBeInTheDocument();
+    expect(screen.getByText("Done")).toBeInTheDocument();
     expect(screen.getByText("Blocked")).toBeInTheDocument();
     expect(screen.getByText("Final Check awaiting")).toBeInTheDocument();
-    expect(screen.getByText("Done")).toBeInTheDocument();
   });
 
   it("calls onStatusChange when a new status is selected", async () => {
     const user = userEvent.setup();
     render(<ChecklistItem {...mockProps} />);
 
-    const statusButton = screen.getByRole("button", { name: "○" });
+    const statusButton = screen.getByRole("button", { name: /change status/i });
     await user.click(statusButton);
 
-    const inProgressOption = screen.getByText("In Progress").closest("button")!;
-    await user.click(inProgressOption);
+    const doneOption = screen.getByRole("button", { name: /done/i });
+    await user.click(doneOption);
 
-    expect(mockProps.onStatusChange).toHaveBeenCalledWith("in-progress");
+    expect(mockProps.onStatusChange).toHaveBeenCalledWith("done");
   });
 
   it("shows current status as selected in dropdown", async () => {
@@ -61,23 +61,26 @@ describe("ChecklistItem", () => {
     const inProgressItem = { ...mockItem, status: "in-progress" as const };
     render(<ChecklistItem {...mockProps} item={inProgressItem} />);
 
-    const statusButton = screen.getByRole("button", { name: "◐" });
+    const statusButton = screen.getByRole("button", { name: /change status/i });
     await user.click(statusButton);
 
-    // Find the "In Progress" option in the dropdown menu specifically
-    const dropdown = screen
-      .getByRole("button", { name: "◐" })
-      .parentElement?.querySelector(".absolute");
-    const selectedOption = dropdown?.querySelector("button.bg-gray-50");
-    expect(selectedOption?.innerHTML).toContain("✓");
+    // Find the checkmark that's specifically in the ml-auto span (which indicates selection)
+    const checkmarks = screen.getAllByText("✓");
+    const selectedCheckmark = checkmarks.find((el) =>
+      el.className.includes("ml-auto")
+    );
+    const inProgressOption = selectedCheckmark?.closest("button");
+    expect(inProgressOption).toHaveTextContent("In Progress");
   });
 
   it("enters edit mode when text is clicked", async () => {
     const user = userEvent.setup();
     render(<ChecklistItem {...mockProps} />);
 
-    const text = screen.getByText("Test checklist item");
-    await user.click(text);
+    const editButton = screen.getByRole("button", {
+      name: /edit checklist item text/i,
+    });
+    await user.click(editButton);
 
     const input = screen.getByDisplayValue("Test checklist item");
     expect(input).toBeInTheDocument();
@@ -208,21 +211,20 @@ describe("ChecklistItem", () => {
     const user = userEvent.setup();
     const { container } = render(<ChecklistItem {...mockProps} />);
 
-    const statusButton = screen.getByRole("button", { name: "○" });
+    const statusButton = screen.getByRole("button", { name: /change status/i });
     await user.click(statusButton);
 
     // Verify dropdown is open
-    const dropdown = container.querySelector(".absolute.top-full");
-    expect(dropdown).toBeInTheDocument();
+    expect(screen.getByText("In Progress")).toBeInTheDocument();
 
-    // Click on the overlay that should close the dropdown
+    // Click on the overlay div that covers the screen
     const overlay = container.querySelector(".fixed.inset-0");
-    if (overlay) {
-      await user.click(overlay);
-    }
+    expect(overlay).toBeInTheDocument();
+    await user.click(overlay!);
 
-    // Verify dropdown is closed
-    const closedDropdown = container.querySelector(".absolute.top-full");
-    expect(closedDropdown).not.toBeInTheDocument();
+    // Verify dropdown is closed - use queryByRole to check the dropdown menu is gone
+    expect(
+      screen.queryByRole("button", { name: /done/i })
+    ).not.toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTaskStore } from "@/stores/taskStore";
 import { useUIStore } from "@/stores/uiStore";
 import type { ChecklistItemType } from "@/types/db.types";
@@ -10,6 +10,8 @@ export const useTaskDetails = () => {
   const [newTitle, setNewTitle] = useState("");
   const [newItemText, setNewItemText] = useState("");
   const [isExpanded, setIsExpanded] = useState(true);
+  const [showNewItemInput, setShowNewItemInput] = useState(false);
+  const newItemInputRef = useRef<HTMLInputElement>(null);
 
   const selectedTask = tasks.find((t) => t.id === selectedTaskId);
 
@@ -19,9 +21,17 @@ export const useTaskDetails = () => {
     }
   }, [selectedTask]);
 
+  useEffect(() => {
+    if (showNewItemInput && newItemInputRef.current) {
+      newItemInputRef.current.focus();
+    }
+  }, [showNewItemInput]);
+
   const handleClose = () => {
     setSelectedTaskId(null);
     setEditingTitle(false);
+    setShowNewItemInput(false);
+    setNewItemText("");
   };
 
   const handleUpdateTitle = async () => {
@@ -46,6 +56,16 @@ export const useTaskDetails = () => {
     });
 
     setNewItemText("");
+    setShowNewItemInput(false);
+  };
+
+  const handleShowNewItemInput = () => {
+    setShowNewItemInput(true);
+  };
+
+  const handleCancelNewItem = () => {
+    setNewItemText("");
+    setShowNewItemInput(false);
   };
 
   const handleDeleteItem = async (itemId: string) => {
@@ -79,9 +99,13 @@ export const useTaskDetails = () => {
     isExpanded,
     setIsExpanded,
     hasBlockedItems,
+    showNewItemInput,
+    newItemInputRef,
     handleClose,
     handleUpdateTitle,
     handleAddItem,
+    handleShowNewItemInput,
+    handleCancelNewItem,
     handleDeleteItem,
     handleUpdateChecklistItem,
   };

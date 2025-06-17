@@ -48,6 +48,9 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({
                 ? "bg-yellow-100 text-yellow-600 border-2 border-yellow-600"
                 : "bg-white border-2 border-gray-300"
             }`}
+            aria-label={`Change status. Current status: ${status.label}`}
+            aria-expanded={showStatusMenu}
+            aria-haspopup="true"
           >
             {status.icon}
           </button>
@@ -100,7 +103,11 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({
               autoFocus
             />
           ) : (
-            <div onClick={() => setIsEditing(true)} className="cursor-text">
+            <button
+              onClick={() => setIsEditing(true)}
+              className="cursor-text text-left w-full focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1 -mx-1"
+              aria-label="Edit checklist item text"
+            >
               <p
                 className={`text-sm ${
                   item.status === "done"
@@ -118,7 +125,7 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({
                   {item.status === "final-check" && " done"}
                 </p>
               )}
-            </div>
+            </button>
           )}
         </div>
 
@@ -126,6 +133,7 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({
         <button
           onClick={onDelete}
           className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-600 transition-all p-1"
+          aria-label="Delete checklist item"
         >
           <svg
             className="w-4 h-4"

@@ -14,9 +14,13 @@ export const TaskDetails: React.FC = () => {
     isExpanded,
     setIsExpanded,
     hasBlockedItems,
+    showNewItemInput,
+    newItemInputRef,
     handleClose,
     handleUpdateTitle,
     handleAddItem,
+    handleShowNewItemInput,
+    handleCancelNewItem,
     handleDeleteItem,
     handleUpdateChecklistItem,
   } = useTaskDetails();
@@ -34,6 +38,7 @@ export const TaskDetails: React.FC = () => {
               <button
                 onClick={handleClose}
                 className="text-gray-400 hover:text-gray-600"
+                aria-label="Close task details"
               >
                 <svg
                   className="w-5 h-5"
@@ -66,10 +71,18 @@ export const TaskDetails: React.FC = () => {
                 />
               ) : (
                 <p
-                  className={`text-base cursor-pointer hover:text-gray-700 ${
+                  role="button"
+                  tabIndex={0}
+                  className={`text-base cursor-pointer ${
                     hasBlockedItems ? "text-red-600" : "text-gray-900"
                   }`}
                   onClick={() => setEditingTitle(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setEditingTitle(true);
+                    }
+                  }}
                 >
                   {hasBlockedItems && "Ticket progress is blocked"}
                   {!hasBlockedItems && selectedTask.title}
@@ -89,6 +102,9 @@ export const TaskDetails: React.FC = () => {
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
                   className="text-gray-400 hover:text-gray-600"
+                  aria-label={
+                    isExpanded ? "Collapse checklist" : "Expand checklist"
+                  }
                 >
                   <svg
                     className={`w-5 h-5 transform transition-transform ${
@@ -131,40 +147,41 @@ export const TaskDetails: React.FC = () => {
                 </div>
 
                 {/* Add New Item */}
-                <button
-                  onClick={() => {
-                    const input = document.getElementById("new-item-input");
-                    if (input) {
-                      input.focus();
-                    }
-                  }}
-                  className="mt-4 w-full p-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group"
-                >
-                  <div className="flex items-center justify-center space-x-2 text-blue-600">
-                    <span className="text-2xl group-hover:scale-110 transition-transform">
-                      +
-                    </span>
-                    <span className="text-sm font-medium">ADD NEW ITEM</span>
-                  </div>
-                </button>
-
-                {/* Hidden input for adding new items */}
-                <input
-                  id="new-item-input"
-                  type="text"
-                  value={newItemText}
-                  onChange={(e) => setNewItemText(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleAddItem();
-                    if (e.key === "Escape") setNewItemText("");
-                  }}
-                  onBlur={() => {
-                    if (newItemText.trim()) handleAddItem();
-                  }}
-                  placeholder="Type new item and press Enter..."
-                  className="mt-2 w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 hidden"
-                  style={{ display: newItemText ? "block" : "none" }}
-                />
+                {!showNewItemInput ? (
+                  <button
+                    onClick={handleShowNewItemInput}
+                    className="mt-4 w-full p-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group"
+                  >
+                    <div className="flex items-center justify-center space-x-2 text-blue-600">
+                      <span className="text-2xl group-hover:scale-110 transition-transform">
+                        +
+                      </span>
+                      <span className="text-sm font-medium">ADD NEW ITEM</span>
+                    </div>
+                  </button>
+                ) : (
+                  <input
+                    ref={newItemInputRef}
+                    type="text"
+                    value={newItemText}
+                    onChange={(e) => setNewItemText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && newItemText.trim()) {
+                        handleAddItem();
+                      }
+                      if (e.key === "Escape") {
+                        handleCancelNewItem();
+                      }
+                    }}
+                    onBlur={() => {
+                      if (!newItemText.trim()) {
+                        handleCancelNewItem();
+                      }
+                    }}
+                    placeholder="Type new item and press Enter..."
+                    className="mt-4 w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                )}
               </>
             )}
           </div>

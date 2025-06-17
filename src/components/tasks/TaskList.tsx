@@ -53,12 +53,13 @@ export const TaskList: React.FC = () => {
               totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
             return (
-              <div
+              <button
                 key={task.id}
-                className={`px-6 py-4 hover:bg-gray-50 cursor-pointer transition-colors ${
+                className={`w-full text-left px-6 py-4 hover:bg-gray-50 cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   selectedTaskId === task.id ? "bg-blue-50" : ""
                 }`}
                 onClick={() => setSelectedTaskId(task.id)}
+                aria-label={`Select task: ${task.title}`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -120,6 +121,7 @@ export const TaskList: React.FC = () => {
                       }
                     }}
                     className="ml-4 text-red-600 hover:text-red-800"
+                    aria-label={`Delete task: ${task.title}`}
                   >
                     <svg
                       className="w-4 h-4"
@@ -136,7 +138,7 @@ export const TaskList: React.FC = () => {
                     </svg>
                   </button>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>

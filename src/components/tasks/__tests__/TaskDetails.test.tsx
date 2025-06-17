@@ -46,9 +46,13 @@ describe("TaskDetails", () => {
     isExpanded: true,
     setIsExpanded: vi.fn(),
     hasBlockedItems: true,
+    showNewItemInput: false,
+    newItemInputRef: { current: null },
     handleClose: vi.fn(),
     handleUpdateTitle: vi.fn(),
     handleAddItem: vi.fn(),
+    handleShowNewItemInput: vi.fn(),
+    handleCancelNewItem: vi.fn(),
     handleDeleteItem: vi.fn(),
     handleUpdateChecklistItem: vi.fn(),
   };
@@ -200,22 +204,26 @@ describe("TaskDetails", () => {
     expect(screen.getByText("ADD NEW ITEM")).toBeInTheDocument();
   });
 
-  it("focuses hidden input when add button is clicked", async () => {
+  it("shows new item input when add button is clicked", async () => {
     const user = userEvent.setup();
-    render(<TaskDetails />);
-
-    const addButton =
-      screen.getByText("ADD NEW ITEM").parentElement!.parentElement!;
-    await user.click(addButton);
-
-    // The input should get focus via getElementById in the component
-    expect(addButton).toBeInTheDocument();
-  });
-
-  it("shows new item input when text is entered", () => {
+    const mockShowNewItemInput = vi.fn();
     vi.mocked(useTaskDetails).mockReturnValue({
       ...mockProps,
-      newItemText: "New Item",
+      handleShowNewItemInput: mockShowNewItemInput,
+    } as any);
+
+    render(<TaskDetails />);
+
+    const addButton = screen.getByText("ADD NEW ITEM");
+    await user.click(addButton);
+
+    expect(mockShowNewItemInput).toHaveBeenCalledOnce();
+  });
+
+  it("shows new item input field when showNewItemInput is true", () => {
+    vi.mocked(useTaskDetails).mockReturnValue({
+      ...mockProps,
+      showNewItemInput: true,
     } as any);
 
     render(<TaskDetails />);
@@ -223,33 +231,60 @@ describe("TaskDetails", () => {
     const input = screen.getByPlaceholderText(
       "Type new item and press Enter..."
     );
-    expect(input).toBeVisible();
-    expect(input).toHaveValue("New Item");
+    expect(input).toBeInTheDocument();
   });
 
   it("adds item on Enter key", async () => {
     const user = userEvent.setup();
+    const mockHandleAddItem = vi.fn();
+    const mockSetNewItemText = vi.fn();
+
+    // Start with empty text
+    let currentText = "";
+
     vi.mocked(useTaskDetails).mockReturnValue({
       ...mockProps,
-      newItemText: "New Item",
+      showNewItemInput: true,
+      newItemText: currentText,
+      setNewItemText: mockSetNewItemText.mockImplementation((text) => {
+        currentText = text;
+      }),
+      handleAddItem: mockHandleAddItem,
     } as any);
 
-    render(<TaskDetails />);
+    const { rerender } = render(<TaskDetails />);
 
     const input = screen.getByPlaceholderText(
       "Type new item and press Enter..."
     );
-    await user.click(input); // Ensure focus
+
+    // Type text
+    await user.type(input, "New item");
+
+    // Update the mock to reflect the typed text
+    vi.mocked(useTaskDetails).mockReturnValue({
+      ...mockProps,
+      showNewItemInput: true,
+      newItemText: "New item",
+      setNewItemText: mockSetNewItemText,
+      handleAddItem: mockHandleAddItem,
+    } as any);
+
+    rerender(<TaskDetails />);
+
+    // Press Enter
     await user.keyboard("{Enter}");
 
-    expect(mockProps.handleAddItem).toHaveBeenCalledOnce();
+    expect(mockHandleAddItem).toHaveBeenCalledOnce();
   });
 
-  it("clears new item text on Escape", async () => {
+  it("cancels new item on Escape", async () => {
     const user = userEvent.setup();
+    const mockHandleCancelNewItem = vi.fn();
     vi.mocked(useTaskDetails).mockReturnValue({
       ...mockProps,
-      newItemText: "New Item",
+      showNewItemInput: true,
+      handleCancelNewItem: mockHandleCancelNewItem,
     } as any);
 
     render(<TaskDetails />);
@@ -257,10 +292,10 @@ describe("TaskDetails", () => {
     const input = screen.getByPlaceholderText(
       "Type new item and press Enter..."
     );
-    await user.click(input); // Ensure focus
+    await user.type(input, "New item");
     await user.keyboard("{Escape}");
 
-    expect(mockProps.setNewItemText).toHaveBeenCalledWith("");
+    expect(mockHandleCancelNewItem).toHaveBeenCalledOnce();
   });
 
   it("handles checklist item status change", async () => {
