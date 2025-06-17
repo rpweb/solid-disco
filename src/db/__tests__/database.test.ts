@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { getDatabase } from "../database";
 import { createRxDatabase } from "rxdb";
 import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
 import { wrappedValidateAjvStorage } from "rxdb/plugins/validate-ajv";
@@ -200,11 +199,6 @@ describe("database", () => {
 
     // The promise should still be rejected since we don't have window.db
     await expect(promise).rejects.toEqual(db9Error);
-  });
-
-  it.skip("handles DB9 error with existing database in window", async () => {
-    // Skipping this test as the actual implementation doesn't have special
-    // handling for DB9 error that returns window.db
   });
 
   it("logs correct messages during creation", async () => {

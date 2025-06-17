@@ -128,11 +128,6 @@ describe("TaskDetails", () => {
     expect(document.activeElement).toBe(input);
   });
 
-  it.skip("updates title on input change", async () => {
-    // Skipping this test due to complexities with userEvent.clear() not working as expected
-    // The functionality is already tested by the blur and Enter key tests
-  });
-
   it("saves title on blur", async () => {
     const user = userEvent.setup();
     vi.mocked(useTaskDetails).mockReturnValue({
@@ -142,7 +137,6 @@ describe("TaskDetails", () => {
 
     render(<TaskDetails />);
 
-    const input = screen.getByDisplayValue("Test Task");
     await user.click(document.body); // Blur
 
     expect(mockProps.handleUpdateTitle).toHaveBeenCalledOnce();
@@ -157,7 +151,6 @@ describe("TaskDetails", () => {
 
     render(<TaskDetails />);
 
-    const input = screen.getByDisplayValue("Test Task");
     await user.keyboard("{Enter}");
 
     expect(mockProps.handleUpdateTitle).toHaveBeenCalledOnce();
@@ -234,11 +227,6 @@ describe("TaskDetails", () => {
     expect(input).toHaveValue("New Item");
   });
 
-  it.skip("handles new item text change", async () => {
-    // Skipping this test as userEvent.type() simulates character-by-character input
-    // The functionality is already tested by the Enter key and Escape tests
-  });
-
   it("adds item on Enter key", async () => {
     const user = userEvent.setup();
     vi.mocked(useTaskDetails).mockReturnValue({
@@ -273,11 +261,6 @@ describe("TaskDetails", () => {
     await user.keyboard("{Escape}");
 
     expect(mockProps.setNewItemText).toHaveBeenCalledWith("");
-  });
-
-  it.skip("adds item on blur if text exists", async () => {
-    // Skipping this test as mocking the blur behavior with dynamic state is complex
-    // and we already test the main functionality with Enter key
   });
 
   it("handles checklist item status change", async () => {
