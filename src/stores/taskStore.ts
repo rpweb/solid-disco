@@ -75,7 +75,12 @@ export const useTaskStore = create<TaskState>()(
         });
 
         set({ subscription: newSubscription, isLoading: false });
-      } catch (error) {
+      } catch (error: any) {
+        // Retry once if we get DB9 error (database already exists)
+        if (error?.code === "DB9") {
+          setTimeout(() => get().initializeTasks(userId), 100);
+          return;
+        }
         console.error("Error initializing tasks:", error);
         set({
           isLoading: false,
@@ -100,8 +105,8 @@ export const useTaskStore = create<TaskState>()(
           id: crypto.randomUUID(),
           userId,
           title,
-          x,
-          y,
+          x: parseFloat((Math.round(x * 100) / 100).toFixed(2)),
+          y: parseFloat((Math.round(y * 100) / 100).toFixed(2)),
           checklist: generateDefaultChecklist(),
           createdAt: now,
           updatedAt: now,
@@ -121,8 +126,21 @@ export const useTaskStore = create<TaskState>()(
         const task = await db.tasks.findOne(id).exec();
 
         if (task) {
+          // Round x and y if they're being updated
+          const processedUpdates = { ...updates };
+          if (typeof updates.x === "number") {
+            processedUpdates.x = parseFloat(
+              (Math.round(updates.x * 100) / 100).toFixed(2)
+            );
+          }
+          if (typeof updates.y === "number") {
+            processedUpdates.y = parseFloat(
+              (Math.round(updates.y * 100) / 100).toFixed(2)
+            );
+          }
+
           await task.patch({
-            ...updates,
+            ...processedUpdates,
             updatedAt: Date.now(),
           });
         }

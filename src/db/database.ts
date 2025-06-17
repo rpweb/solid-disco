@@ -25,7 +25,10 @@ export async function getDatabase(): Promise<
   RxDatabase<RxDatabaseCollections>
 > {
   if (!dbPromise) {
-    dbPromise = _createDatabase();
+    dbPromise = _createDatabase().catch((error) => {
+      dbPromise = null;
+      throw error;
+    });
   }
   return dbPromise;
 }
