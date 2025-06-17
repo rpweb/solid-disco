@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+import { useUIStore } from "@/stores/uiStore";
 
 interface TaskMarkerProps {
   task: {
@@ -9,15 +10,17 @@ interface TaskMarkerProps {
     checklist: Array<{ status: string }>;
   };
   isSelected: boolean;
+  isHovered?: boolean;
   onClick: () => void;
 }
 
 export const TaskMarker: React.FC<TaskMarkerProps> = ({
   task,
   isSelected,
+  isHovered,
   onClick,
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
+  const { setHoveredTaskId } = useUIStore();
   const completedCount = task.checklist.filter(
     (item) => item.status === "done"
   ).length;
@@ -52,8 +55,8 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
           onClick();
         }
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => setHoveredTaskId(task.id)}
+      onMouseLeave={() => setHoveredTaskId(null)}
       aria-label={`Task: ${task.title}, ${percentage.toFixed(0)}% complete${
         hasBlocked ? ", has blocked items" : ""
       }`}
@@ -111,7 +114,9 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
 
         {/* Tooltip */}
         <div
-          className={`absolute opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 ${
+          className={`absolute transition-opacity pointer-events-none z-50 ${
+            isHovered ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+          } ${
             tooltipRight
               ? "left-full ml-2 top-1/2 -translate-y-1/2"
               : tooltipLeft

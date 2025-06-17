@@ -4,7 +4,7 @@ import { useUIStore } from "../../stores/uiStore";
 
 export const TaskList: React.FC = () => {
   const { tasks, deleteTask } = useTaskStore();
-  const { selectedTaskId, setSelectedTaskId } = useUIStore();
+  const { selectedTaskId, setSelectedTaskId, setHoveredTaskId } = useUIStore();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -59,6 +59,8 @@ export const TaskList: React.FC = () => {
                   selectedTaskId === task.id ? "bg-blue-50" : ""
                 }`}
                 onClick={() => setSelectedTaskId(task.id)}
+                onMouseEnter={() => setHoveredTaskId(task.id)}
+                onMouseLeave={() => setHoveredTaskId(null)}
                 aria-label={`Select task: ${task.title}`}
               >
                 <div className="flex items-start justify-between">

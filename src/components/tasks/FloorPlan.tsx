@@ -14,6 +14,7 @@ export const FloorPlan: React.FC = () => {
     tasks,
     selectedTaskId,
     setSelectedTaskId,
+    hoveredTaskId,
     floorPlanImage,
     handleFloorPlanClick,
     handleCreateTask,
@@ -77,6 +78,7 @@ export const FloorPlan: React.FC = () => {
               key={task.id}
               task={task}
               isSelected={selectedTaskId === task.id}
+              isHovered={hoveredTaskId === task.id}
               onClick={() => setSelectedTaskId(task.id)}
             />
           ))}

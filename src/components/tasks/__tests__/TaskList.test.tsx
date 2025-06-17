@@ -12,6 +12,7 @@ vi.mock("@/stores/uiStore");
 describe("TaskList", () => {
   const mockDeleteTask = vi.fn();
   const mockSetSelectedTaskId = vi.fn();
+  const mockSetHoveredTaskId = vi.fn();
 
   const mockTasks = [
     {
@@ -56,6 +57,8 @@ describe("TaskList", () => {
     vi.mocked(useUIStore).mockReturnValue({
       selectedTaskId: null,
       setSelectedTaskId: mockSetSelectedTaskId,
+      hoveredTaskId: null,
+      setHoveredTaskId: mockSetHoveredTaskId,
       floorPlanImage: null,
       setFloorPlanImage: vi.fn(),
     } as any);
@@ -138,6 +141,8 @@ describe("TaskList", () => {
     vi.mocked(useUIStore).mockReturnValue({
       selectedTaskId: "1",
       setSelectedTaskId: mockSetSelectedTaskId,
+      hoveredTaskId: null,
+      setHoveredTaskId: mockSetHoveredTaskId,
       floorPlanImage: null,
       setFloorPlanImage: vi.fn(),
     } as any);

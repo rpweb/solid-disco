@@ -12,7 +12,8 @@ export const useFloorPlan = () => {
   const [showTaskModal, setShowTaskModal] = useState(false);
 
   const { tasks, createTask } = useTaskStore();
-  const { selectedTaskId, setSelectedTaskId, floorPlanImage } = useUIStore();
+  const { selectedTaskId, setSelectedTaskId, hoveredTaskId, floorPlanImage } =
+    useUIStore();
 
   const handleFloorPlanClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isAddingTask || !containerRef.current) return;
@@ -72,6 +73,7 @@ export const useFloorPlan = () => {
     tasks,
     selectedTaskId,
     setSelectedTaskId,
+    hoveredTaskId,
     floorPlanImage,
     handleFloorPlanClick,
     handleCreateTask,
