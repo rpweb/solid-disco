@@ -99,6 +99,13 @@ export const useTaskStore = create<TaskState>()(
 
       try {
         const db = await getDatabase();
+
+        // Ensure tasks collection is ready
+        if (!db.tasks) {
+          console.log("Tasks collection not ready, waiting...");
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+
         const now = Date.now();
 
         await db.tasks.insert({
