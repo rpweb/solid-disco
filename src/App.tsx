@@ -1,14 +1,41 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { LoginForm } from "@/components/auth/LoginForm";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { Dashboard } from "@/pages/Dashboard";
+import { useAuthStore } from "@/stores/authStore";
+
+// Protected Route Component
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const { currentUser } = useAuthStore();
+
+  if (!currentUser) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
 function App() {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm text-center">
-      <h2 className="text-2xl font-bold text-gray-800">Tailwind Card</h2>
-      <p className="text-gray-600 mt-3">
-        This is a simple card layout built with Tailwind CSS.
-      </p>
-      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
-        Learn More
-      </button>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<LoginForm />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
