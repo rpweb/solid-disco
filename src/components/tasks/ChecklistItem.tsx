@@ -37,7 +37,7 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({
         <div className="relative">
           <button
             onClick={() => setShowStatusMenu(!showStatusMenu)}
-            className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg font-bold transition-all ${
+            className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg font-bold transition-all cursor-pointer ${
               item.status === "done"
                 ? "bg-green-100 text-green-600 border-2 border-green-600"
                 : item.status === "blocked"
@@ -65,7 +65,7 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({
                     onStatusChange(value);
                     setShowStatusMenu(false);
                   }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2 ${
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2 cursor-pointer ${
                     item.status === value ? "bg-gray-50" : ""
                   }`}
                 >
@@ -132,7 +132,7 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({
         {/* Delete Button */}
         <button
           onClick={onDelete}
-          className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-600 transition-all p-1"
+          className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-600 transition-all p-1 cursor-pointer"
           aria-label="Delete checklist item"
         >
           <svg

@@ -26,7 +26,7 @@ export const Header: React.FC = () => {
               <span className="text-gray-700">Welcome, {currentUser.name}</span>
               <button
                 onClick={handleLogout}
-                className="text-sm text-gray-500 hover:text-gray-700"
+                className="text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
               >
                 Logout
               </button>

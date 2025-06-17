@@ -59,7 +59,8 @@ export const LoginForm: React.FC = () => {
                 <button
                   type="button"
                   onClick={clearError}
-                  className="text-sm text-red-500 underline mt-1"
+                  className="text-sm text-red-500 underline mt-1 cursor-pointer hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded px-1"
+                  aria-label="Dismiss error message"
                 >
                   Dismiss
                 </button>
@@ -69,7 +70,11 @@ export const LoginForm: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading || !name.trim()}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              aria-label={
+                isLoading ? "Loading, please wait" : "Login with your name"
+              }
+              aria-disabled={isLoading || !name.trim()}
             >
               {isLoading ? "Loading..." : "Login"}
             </button>

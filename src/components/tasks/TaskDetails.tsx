@@ -37,7 +37,7 @@ export const TaskDetails: React.FC = () => {
               <h2 className="text-lg font-bold">Task Name</h2>
               <button
                 onClick={handleClose}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 cursor-pointer p-1"
                 aria-label="Close task details"
               >
                 <svg
@@ -101,7 +101,7 @@ export const TaskDetails: React.FC = () => {
                 </span>
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-gray-600 cursor-pointer p-1"
                   aria-label={
                     isExpanded ? "Collapse checklist" : "Expand checklist"
                   }
@@ -150,7 +150,7 @@ export const TaskDetails: React.FC = () => {
                 {!showNewItemInput ? (
                   <button
                     onClick={handleShowNewItemInput}
-                    className="mt-4 w-full p-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group"
+                    className="mt-4 w-full p-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group cursor-pointer"
                   >
                     <div className="flex items-center justify-center space-x-2 text-blue-600">
                       <span className="text-2xl group-hover:scale-110 transition-transform">

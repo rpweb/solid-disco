@@ -120,7 +120,7 @@ export const TaskList: React.FC = () => {
                         deleteTask(task.id);
                       }
                     }}
-                    className="ml-4 text-red-600 hover:text-red-800"
+                    className="ml-4 text-red-600 hover:text-red-800 cursor-pointer p-1"
                     aria-label={`Delete task: ${task.title}`}
                   >
                     <svg

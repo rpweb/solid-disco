@@ -35,6 +35,8 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       className={`absolute transform -translate-x-1/2 -translate-y-full cursor-pointer transition-all ${
         isSelected ? "scale-110" : isHovered ? "scale-105" : ""
       }`}
@@ -44,8 +46,18 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
         zIndex: isHovered ? 30 : isSelected ? 20 : 10,
       }}
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      aria-label={`Task: ${task.title}, ${percentage.toFixed(0)}% complete${
+        hasBlocked ? ", has blocked items" : ""
+      }`}
+      aria-pressed={isSelected}
     >
       <div className={`relative group ${isSelected ? "animate-pulse" : ""}`}>
         {/* Task marker pin */}
