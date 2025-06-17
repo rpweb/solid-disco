@@ -1,4 +1,4 @@
-import type { ChecklistItem } from "@/types/db.types";
+import type { ChecklistItemType } from "@/types/db.types";
 
 const DEFAULT_CHECKLIST_ITEMS = [
   { text: "Site preparation", status: "not-started" as const },
@@ -9,7 +9,7 @@ const DEFAULT_CHECKLIST_ITEMS = [
 ];
 
 // Generate default checklist with unique IDs
-export const generateDefaultChecklist = (): ChecklistItem[] => {
+export const generateDefaultChecklist = (): ChecklistItemType[] => {
   return DEFAULT_CHECKLIST_ITEMS.map((item) => ({
     ...item,
     id: crypto.randomUUID(),
