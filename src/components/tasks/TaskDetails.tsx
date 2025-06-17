@@ -128,7 +128,7 @@ export const TaskDetails: React.FC = () => {
                       item={item}
                       onStatusChange={(status) =>
                         handleUpdateChecklistItem(item.id, {
-                          status: status as any,
+                          status,
                         })
                       }
                       onTextChange={(text) =>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTaskStore } from "@/stores/taskStore";
 import { useUIStore } from "@/stores/uiStore";
+import { CHECKLIST_STATUS } from "@/types/db.types";
 import type { ChecklistItemType } from "@/types/db.types";
 
 export const useTaskDetails = () => {
@@ -53,7 +54,7 @@ export const useTaskDetails = () => {
     const newItem: ChecklistItemType = {
       id: crypto.randomUUID(),
       text: newItemText.trim(),
-      status: "not-started",
+      status: CHECKLIST_STATUS.NOT_STARTED,
     };
 
     await updateTask(selectedTask.id, {
@@ -91,7 +92,9 @@ export const useTaskDetails = () => {
   };
 
   const hasBlockedItems =
-    selectedTask?.checklist.some((item) => item.status === "blocked") ?? false;
+    selectedTask?.checklist.some(
+      (item) => item.status === CHECKLIST_STATUS.BLOCKED
+    ) ?? false;
 
   return {
     selectedTask,

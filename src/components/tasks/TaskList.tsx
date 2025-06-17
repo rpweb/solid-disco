@@ -1,6 +1,7 @@
 import React from "react";
 import { useTaskStore } from "../../stores/taskStore";
 import { useUIStore } from "../../stores/uiStore";
+import { getStatusBadgeClasses, getStatusLabel } from "@/utils/status.utils";
 
 export const TaskList: React.FC = () => {
   const tasks = useTaskStore((state) => state.tasks);
@@ -8,28 +9,6 @@ export const TaskList: React.FC = () => {
   const selectedTaskId = useUIStore((state) => state.selectedTaskId);
   const setSelectedTaskId = useUIStore((state) => state.setSelectedTaskId);
   const setHoveredTaskId = useUIStore((state) => state.setHoveredTaskId);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "done":
-        return "bg-green-100 text-green-800";
-      case "in-progress":
-        return "bg-yellow-100 text-yellow-800";
-      case "blocked":
-        return "bg-red-100 text-red-800";
-      case "final-check":
-        return "bg-blue-100 text-blue-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    return status
-      .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
 
   return (
     <div className="bg-white rounded-lg shadow">
@@ -99,7 +78,7 @@ export const TaskList: React.FC = () => {
                           className="flex items-center space-x-2"
                         >
                           <span
-                            className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(
+                            className={`text-xs px-2 py-0.5 rounded-full ${getStatusBadgeClasses(
                               item.status
                             )}`}
                           >
