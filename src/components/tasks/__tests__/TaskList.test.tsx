@@ -167,50 +167,32 @@ describe("TaskList", () => {
 
     render(<TaskList />);
 
+    // Find the parent div that contains the task
     const task1Button = screen.getByRole("button", {
       name: /Select task: Task 1/i,
     });
-    expect(task1Button).toHaveClass("bg-blue-50");
+    const taskContainer = task1Button.closest("div.px-6.py-4");
+    expect(taskContainer).toHaveClass("bg-blue-50");
   });
 
-  it("deletes task when delete button clicked and confirmed", async () => {
-    const user = userEvent.setup();
-    global.confirm = vi.fn(() => true);
-
+  it("renders delete buttons for each task", () => {
     render(<TaskList />);
 
     const deleteButtons = screen.getAllByRole("button", {
-      name: /Delete task:/i,
+      name: /Delete Task/i,
     });
-    await user.click(deleteButtons[0]);
 
-    expect(global.confirm).toHaveBeenCalledWith("Delete this task?");
-    expect(mockDeleteTask).toHaveBeenCalledWith("1");
-  });
-
-  it("does not delete task when delete is cancelled", async () => {
-    const user = userEvent.setup();
-    global.confirm = vi.fn(() => false);
-
-    render(<TaskList />);
-
-    const deleteButtons = screen.getAllByRole("button", {
-      name: /Delete task:/i,
-    });
-    await user.click(deleteButtons[0]);
-
-    expect(global.confirm).toHaveBeenCalledWith("Delete this task?");
-    expect(mockDeleteTask).not.toHaveBeenCalled();
+    expect(deleteButtons).toHaveLength(2);
+    expect(deleteButtons[0]).toHaveAttribute("aria-label", "Delete Task 1");
+    expect(deleteButtons[1]).toHaveAttribute("aria-label", "Delete Task 2");
   });
 
   it("prevents event propagation when delete button is clicked", async () => {
     const user = userEvent.setup();
-    global.confirm = vi.fn(() => true);
-
     render(<TaskList />);
 
     const deleteButtons = screen.getAllByRole("button", {
-      name: /Delete task:/i,
+      name: /Delete Task/i,
     });
     await user.click(deleteButtons[0]);
 

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import type { ChecklistItemType } from "@/types/db.types";
 import { CHECKLIST_STATUS, type ChecklistItemStatus } from "@/types/db.types";
 import { getStatusConfig, getStatusFullClasses } from "@/utils/status.utils";
+import { DeleteButton } from "@/components/ui/DeleteButton";
 
 interface ChecklistItemProps {
   item: ChecklistItemType;
@@ -120,26 +121,12 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({
         )}
       </div>
 
-      {/* Delete Button */}
-      <button
-        onClick={onDelete}
-        className="opacity-0 group-hover:opacity-100 text-red-600 hover:text-red-800 transition-opacity cursor-pointer p-1"
-        aria-label={`Delete ${item.text}`}
-      >
-        <svg
-          className="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-          />
-        </svg>
-      </button>
+      {/* Delete Button with Confirmation */}
+      <DeleteButton
+        onDelete={onDelete}
+        itemName={item.text}
+        confirmMessage="Delete this item?"
+      />
     </div>
   );
 };
