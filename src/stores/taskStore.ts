@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { getDatabase } from "@/db/database";
-import type { ChecklistItem, RxTaskDocumentType } from "@/types/db.types";
+import type { ChecklistItemType, RxTaskDocumentType } from "@/types/db.types";
 import { generateDefaultChecklist } from "@/utils/constants";
 import { Subscription } from "rxjs";
 import { useAuthStore } from "@/stores/authStore";
@@ -23,7 +23,7 @@ interface TaskState {
   updateChecklistItem: (
     taskId: string,
     itemId: string,
-    updates: Partial<ChecklistItem>
+    updates: Partial<ChecklistItemType>
   ) => Promise<void>;
   cleanup: () => void;
 }
@@ -173,7 +173,7 @@ export const useTaskStore = create<TaskState>()(
     updateChecklistItem: async (
       taskId: string,
       itemId: string,
-      updates: Partial<ChecklistItem>
+      updates: Partial<ChecklistItemType>
     ) => {
       try {
         const db = await getDatabase();

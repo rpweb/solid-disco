@@ -226,6 +226,25 @@ describe("taskStore", () => {
       );
     });
 
+    it("handles floating point precision for coordinates with more decimal places", async () => {
+      const { result } = renderHook(() => useTaskStore());
+
+      await act(async () => {
+        await result.current.createTask({
+          title: "New Task",
+          x: 21.509999999999999,
+          y: 33.089999999999999,
+        });
+      });
+
+      expect(mockDb.tasks.insert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          x: 21.51,
+          y: 33.09,
+        })
+      );
+    });
+
     it("generates default checklist", async () => {
       const { result } = renderHook(() => useTaskStore());
 
