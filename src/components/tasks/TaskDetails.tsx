@@ -302,45 +302,35 @@ export const TaskDetails: React.FC = () => {
           <div className="px-6 py-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold">Checklist</h3>
-              <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <svg
-                  className={`w-5 h-5 transform transition-transform ${
-                    isExpanded ? "rotate-180" : ""
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-500">
+                  {selectedTask.checklist.length} STEPS
+                </span>
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="text-gray-400 hover:text-gray-600"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    className={`w-5 h-5 transform transition-transform ${
+                      isExpanded ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             {isExpanded && (
               <>
-                {/* Main Checklist Header */}
-                <div className="mb-4 p-3 bg-gray-50 rounded-lg flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <span className="bg-blue-900 text-white px-3 py-1 rounded text-sm font-medium">
-                      CI
-                    </span>
-                    <span className="text-base font-medium">
-                      Light Bulb 150S
-                    </span>
-                  </div>
-                  <span className="text-sm text-gray-500">
-                    {selectedTask.checklist.length} STEPS
-                  </span>
-                </div>
-
                 {/* Checklist Items */}
                 <div className="space-y-1">
                   {selectedTask.checklist.map((item) => (
