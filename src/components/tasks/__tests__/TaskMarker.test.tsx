@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TaskMarker } from "../TaskMarker";
@@ -46,7 +46,7 @@ describe("TaskMarker", () => {
       <TaskMarker task={mockTask} isSelected={false} onClick={mockOnClick} />
     );
 
-    expect(screen.getByText("2/4")).toBeInTheDocument();
+    expect(screen.getByText("50% complete")).toBeInTheDocument();
   });
 
   it("applies selected styles when isSelected is true", () => {
@@ -56,7 +56,7 @@ describe("TaskMarker", () => {
 
     const marker = container.firstChild as HTMLElement;
     expect(marker.className).toContain("scale-110");
-    expect(marker.className).toContain("z-20");
+    expect(marker.style.zIndex).toBe("20");
 
     const innerDiv = marker.firstChild as HTMLElement;
     expect(innerDiv.className).toContain("animate-pulse");
@@ -97,7 +97,6 @@ describe("TaskMarker", () => {
       />
     );
 
-    expect(screen.getByText("0/0")).toBeInTheDocument();
     expect(screen.getByText("0% complete")).toBeInTheDocument();
   });
 
@@ -114,7 +113,6 @@ describe("TaskMarker", () => {
       />
     );
 
-    expect(screen.getByText("2/2")).toBeInTheDocument();
     expect(screen.getByText("100% complete")).toBeInTheDocument();
   });
 

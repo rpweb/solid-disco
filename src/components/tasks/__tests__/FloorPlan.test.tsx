@@ -79,8 +79,7 @@ describe("FloorPlan", () => {
 
     const taskMarkers = screen.getAllByText("T");
     expect(taskMarkers).toHaveLength(2); // Two tasks
-    expect(screen.getByText("1/2")).toBeInTheDocument(); // Progress for task 1
-    expect(screen.getByText("0/0")).toBeInTheDocument(); // Progress for task 2
+    // Progress indicators are no longer shown as text, they're pie charts
   });
 
   it("toggles adding mode when button is clicked", async () => {

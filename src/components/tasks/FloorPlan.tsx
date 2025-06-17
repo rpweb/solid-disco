@@ -40,7 +40,7 @@ export const FloorPlan: React.FC = () => {
 
       {/* Floor plan container */}
       <div
-        className={`relative bg-gray-100 rounded-lg shadow-inner overflow-x-auto overflow-y-visible ${
+        className={`relative bg-gray-100 rounded-lg shadow-inner overflow-auto ${
           isAddingTask ? "cursor-crosshair" : "cursor-default"
         }`}
       >
@@ -60,7 +60,7 @@ export const FloorPlan: React.FC = () => {
             <img
               src={floorPlanImage}
               alt="Floor Plan"
-              className="w-full h-full object-contain"
+              className="absolute inset-0 w-full h-full object-contain"
               draggable={false}
             />
           ) : (

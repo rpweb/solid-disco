@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 interface TaskMarkerProps {
   task: {
@@ -17,11 +17,16 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
   isSelected,
   onClick,
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
   const completedCount = task.checklist.filter(
     (item) => item.status === "done"
   ).length;
+  const blockedCount = task.checklist.filter(
+    (item) => item.status === "blocked"
+  ).length;
   const totalCount = task.checklist.length;
   const percentage = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+  const hasBlocked = blockedCount > 0;
 
   // Position tooltip based on marker position
   const tooltipBelow = task.y < 20;
@@ -31,10 +36,16 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
   return (
     <div
       className={`absolute transform -translate-x-1/2 -translate-y-full cursor-pointer transition-all ${
-        isSelected ? "scale-110 z-20" : "hover:scale-105 z-10"
+        isSelected ? "scale-110" : isHovered ? "scale-105" : ""
       }`}
-      style={{ left: `${task.x}%`, top: `${task.y}%` }}
+      style={{
+        left: `${task.x}%`,
+        top: `${task.y}%`,
+        zIndex: isHovered ? 30 : isSelected ? 20 : 10,
+      }}
       onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <div className={`relative group ${isSelected ? "animate-pulse" : ""}`}>
         {/* Task marker pin */}
@@ -54,13 +65,28 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
               stroke={isSelected ? "#3B82F6" : "#9CA3AF"}
               strokeWidth="2"
             />
-            {/* Inner circle for the letter */}
+
+            {/* Background circle for progress */}
             <circle
               cx="18"
               cy="18"
               r="12"
-              fill={isSelected ? "#DBEAFE" : "#F3F4F6"}
+              fill={hasBlocked ? "#ef4444" : "#f3f4f6"}
             />
+
+            {/* Progress pie */}
+            {percentage > 0 &&
+              !hasBlocked &&
+              (percentage === 100 ? (
+                <circle cx="18" cy="18" r="12" fill="#4ade80" />
+              ) : (
+                <path
+                  d={`M 18 18 L 18 6 A 12 12 0 ${percentage > 50 ? 1 : 0} 1 ${
+                    18 + 12 * Math.sin((percentage / 100) * 2 * Math.PI)
+                  } ${18 - 12 * Math.cos((percentage / 100) * 2 * Math.PI)} Z`}
+                  fill="#4ade80"
+                />
+              ))}
           </svg>
 
           {/* Task initial */}
@@ -69,13 +95,6 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
               {task.title.charAt(0).toUpperCase()}
             </span>
           </div>
-        </div>
-
-        {/* Progress indicator */}
-        <div className="absolute top-[-5px] right-[-5px] w-5 h-5 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-sm">
-          <span className="text-[10px] font-medium">
-            {completedCount}/{totalCount}
-          </span>
         </div>
 
         {/* Tooltip */}
