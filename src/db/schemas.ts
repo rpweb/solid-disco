@@ -17,6 +17,9 @@ export const userSchema: RxJsonSchema<RxUserDocumentType> = {
     },
     createdAt: {
       type: "number",
+      multipleOf: 1,
+      minimum: 0,
+      maximum: 9999999999999,
     },
   },
   required: ["id", "name", "createdAt"],
@@ -45,10 +48,12 @@ export const taskSchema: RxJsonSchema<RxTaskDocumentType> = {
     x: {
       type: "number",
       minimum: 0,
+      multipleOf: 0.01,
     },
     y: {
       type: "number",
       minimum: 0,
+      multipleOf: 0.01,
     },
     checklist: {
       type: "array",
@@ -78,9 +83,15 @@ export const taskSchema: RxJsonSchema<RxTaskDocumentType> = {
     },
     createdAt: {
       type: "number",
+      multipleOf: 1,
+      minimum: 0,
+      maximum: 9999999999999,
     },
     updatedAt: {
       type: "number",
+      multipleOf: 1,
+      minimum: 0,
+      maximum: 9999999999999,
     },
   },
   required: [
