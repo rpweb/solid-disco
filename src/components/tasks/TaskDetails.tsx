@@ -56,9 +56,6 @@ export const TaskDetails: React.FC = () => {
               </button>
             </div>
             <div className="flex items-center space-x-2">
-              {hasBlockedItems && (
-                <span className="w-2 h-2 bg-red-600 rounded-full"></span>
-              )}
               {editingTitle ? (
                 <input
                   type="text"
@@ -73,9 +70,7 @@ export const TaskDetails: React.FC = () => {
                 <p
                   role="button"
                   tabIndex={0}
-                  className={`text-base cursor-pointer ${
-                    hasBlockedItems ? "text-red-600" : "text-gray-900"
-                  }`}
+                  className={`text-base cursor-pointer`}
                   onClick={() => setEditingTitle(true)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
@@ -84,8 +79,7 @@ export const TaskDetails: React.FC = () => {
                     }
                   }}
                 >
-                  {hasBlockedItems && "Ticket progress is blocked"}
-                  {!hasBlockedItems && selectedTask.title}
+                  {selectedTask.title}
                 </p>
               )}
             </div>

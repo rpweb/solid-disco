@@ -76,7 +76,7 @@ describe("TaskDetails", () => {
     render(<TaskDetails />);
 
     expect(screen.getByText("Task Name")).toBeInTheDocument();
-    expect(screen.getByText("Ticket progress is blocked")).toBeInTheDocument();
+    expect(screen.getByText("Test Task")).toBeInTheDocument();
   });
 
   it("shows task title when not blocked", () => {
@@ -332,12 +332,5 @@ describe("TaskDetails", () => {
     await user.click(deleteButtons[0]);
 
     expect(mockProps.handleDeleteItem).toHaveBeenCalledWith("c1");
-  });
-
-  it("shows red dot indicator when has blocked items", () => {
-    render(<TaskDetails />);
-
-    const redDot = document.querySelector(".w-2.h-2.bg-red-600.rounded-full");
-    expect(redDot).toBeInTheDocument();
   });
 });
