@@ -50,7 +50,7 @@ export const FloorPlan: React.FC = () => {
           className="relative overflow-visible"
           style={{
             minWidth: "700px",
-            minHeight: "420px", // 700px * 0.6 to maintain aspect ratio
+            aspectRatio: "5/3", // Maintain aspect ratio (700/420 = 5/3)
             margin: "20px",
           }}
           onClick={handleFloorPlanClick}

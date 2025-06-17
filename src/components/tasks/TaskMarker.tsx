@@ -30,28 +30,49 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
 
   return (
     <div
-      className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all ${
+      className={`absolute transform -translate-x-1/2 -translate-y-full cursor-pointer transition-all ${
         isSelected ? "scale-110 z-20" : "hover:scale-105 z-10"
       }`}
       style={{ left: `${task.x}%`, top: `${task.y}%` }}
       onClick={onClick}
     >
       <div className={`relative group ${isSelected ? "animate-pulse" : ""}`}>
-        {/* Task marker */}
-        <div
-          className={`w-8 h-8 rounded-full border-2 ${
-            isSelected
-              ? "border-blue-500 bg-blue-100"
-              : "border-gray-400 bg-white"
-          } shadow-lg flex items-center justify-center`}
-        >
-          <span className="text-xs font-semibold">
-            {task.title.charAt(0).toUpperCase()}
-          </span>
+        {/* Task marker pin */}
+        <div className="relative">
+          {/* Pin shape */}
+          <svg
+            width="36"
+            height="44"
+            viewBox="0 0 36 44"
+            fill="none"
+            className="drop-shadow-lg"
+          >
+            {/* Pin path with round top and pointed bottom */}
+            <path
+              d="M18 2C9.16 2 2 9.16 2 18C2 26.84 18 42 18 42S34 26.84 34 18C34 9.16 26.84 2 18 2Z"
+              fill={isSelected ? "#3B82F6" : "#FFFFFF"}
+              stroke={isSelected ? "#3B82F6" : "#9CA3AF"}
+              strokeWidth="2"
+            />
+            {/* Inner circle for the letter */}
+            <circle
+              cx="18"
+              cy="18"
+              r="12"
+              fill={isSelected ? "#DBEAFE" : "#F3F4F6"}
+            />
+          </svg>
+
+          {/* Task initial */}
+          <div className="absolute inset-0 flex items-start justify-center pt-2">
+            <span className="text-sm font-semibold text-gray-800">
+              {task.title.charAt(0).toUpperCase()}
+            </span>
+          </div>
         </div>
 
         {/* Progress indicator */}
-        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white border border-gray-300 flex items-center justify-center">
+        <div className="absolute top-[-5px] right-[-5px] w-5 h-5 rounded-full bg-white border border-gray-300 flex items-center justify-center shadow-sm">
           <span className="text-[10px] font-medium">
             {completedCount}/{totalCount}
           </span>
