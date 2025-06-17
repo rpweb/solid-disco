@@ -14,7 +14,7 @@ interface UIState {
 export const useUIStore = create<UIState>()((set) => ({
   isAddingTask: false,
   selectedTaskId: null,
-  floorPlanImage: "/floor-plan.png", // Default floor plan image
+  floorPlanImage: "/construction-plan.png", // Default floor plan image
 
   setIsAddingTask: (value) => set({ isAddingTask: value }),
   setSelectedTaskId: (id) => set({ selectedTaskId: id }),
