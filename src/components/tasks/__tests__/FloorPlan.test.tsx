@@ -166,8 +166,10 @@ describe("FloorPlan", () => {
   it("applies correct cursor style based on mode", () => {
     const { rerender } = render(<FloorPlan />);
 
-    let container = screen.getByAltText("Floor Plan").parentElement!;
-    expect(container).toHaveClass("cursor-default");
+    // The outer container is the one with overflow and cursor styles
+    let outerContainer =
+      screen.getByAltText("Floor Plan").parentElement!.parentElement!;
+    expect(outerContainer).toHaveClass("cursor-default");
 
     vi.mocked(useFloorPlan).mockReturnValue({
       ...mockProps,
@@ -176,7 +178,8 @@ describe("FloorPlan", () => {
 
     rerender(<FloorPlan />);
 
-    container = screen.getByAltText("Floor Plan").parentElement!;
-    expect(container).toHaveClass("cursor-crosshair");
+    outerContainer =
+      screen.getByAltText("Floor Plan").parentElement!.parentElement!;
+    expect(outerContainer).toHaveClass("cursor-crosshair");
   });
 });

@@ -40,49 +40,58 @@ export const FloorPlan: React.FC = () => {
 
       {/* Floor plan container */}
       <div
-        ref={containerRef}
-        className={`relative bg-gray-100 rounded-lg shadow-inner ${
+        className={`relative bg-gray-100 rounded-lg shadow-inner overflow-x-auto overflow-y-visible ${
           isAddingTask ? "cursor-crosshair" : "cursor-default"
         }`}
-        style={{ paddingBottom: "60%" }} // Maintain aspect ratio
-        onClick={handleFloorPlanClick}
       >
-        {/* Floor plan image */}
-        {floorPlanImage ? (
-          <img
-            src={floorPlanImage}
-            alt="Floor Plan"
-            className="absolute inset-0 w-full h-full object-contain"
-            draggable={false}
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-gray-400 text-sm">
-              No floor plan image uploaded
-            </p>
-          </div>
-        )}
+        {/* Inner scrollable container */}
+        <div
+          ref={containerRef}
+          className="relative overflow-visible"
+          style={{
+            minWidth: "700px",
+            minHeight: "420px", // 700px * 0.6 to maintain aspect ratio
+            margin: "20px",
+          }}
+          onClick={handleFloorPlanClick}
+        >
+          {/* Floor plan image */}
+          {floorPlanImage ? (
+            <img
+              src={floorPlanImage}
+              alt="Floor Plan"
+              className="w-full h-full object-contain"
+              draggable={false}
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <p className="text-gray-400 text-sm">
+                No floor plan image uploaded
+              </p>
+            </div>
+          )}
 
-        {/* Task markers */}
-        {tasks.map((task) => (
-          <TaskMarker
-            key={task.id}
-            task={task}
-            isSelected={selectedTaskId === task.id}
-            onClick={() => setSelectedTaskId(task.id)}
-          />
-        ))}
+          {/* Task markers */}
+          {tasks.map((task) => (
+            <TaskMarker
+              key={task.id}
+              task={task}
+              isSelected={selectedTaskId === task.id}
+              onClick={() => setSelectedTaskId(task.id)}
+            />
+          ))}
 
-        {/* Temporary marker while adding */}
-        {tempMarker && (
-          <div
-            className="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-            style={{ left: `${tempMarker.x}%`, top: `${tempMarker.y}%` }}
-          >
-            <div className="w-8 h-8 rounded-full bg-blue-500 opacity-50 animate-ping"></div>
-            <div className="absolute inset-0 w-8 h-8 rounded-full bg-blue-500"></div>
-          </div>
-        )}
+          {/* Temporary marker while adding */}
+          {tempMarker && (
+            <div
+              className="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+              style={{ left: `${tempMarker.x}%`, top: `${tempMarker.y}%` }}
+            >
+              <div className="w-8 h-8 rounded-full bg-blue-500 opacity-50 animate-ping"></div>
+              <div className="absolute inset-0 w-8 h-8 rounded-full bg-blue-500"></div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Instructions */}

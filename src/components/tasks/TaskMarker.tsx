@@ -23,6 +23,11 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
   const totalCount = task.checklist.length;
   const percentage = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
+  // Position tooltip based on marker position
+  const tooltipBelow = task.y < 20;
+  const tooltipRight = task.x < 15;
+  const tooltipLeft = task.x > 85;
+
   return (
     <div
       className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all ${
@@ -53,15 +58,45 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
         </div>
 
         {/* Tooltip */}
-        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+        <div
+          className={`absolute opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 ${
+            tooltipRight
+              ? "left-full ml-2 top-1/2 -translate-y-1/2"
+              : tooltipLeft
+              ? "right-full mr-2 top-1/2 -translate-y-1/2"
+              : tooltipBelow
+              ? "top-full mt-2 left-1/2 -translate-x-1/2"
+              : "bottom-full mb-2 left-1/2 -translate-x-1/2"
+          }`}
+        >
           <div className="bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
             {task.title}
             <div className="text-[10px] text-gray-300">
               {percentage.toFixed(0)}% complete
             </div>
           </div>
-          <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
-            <div className="border-4 border-transparent border-t-gray-900"></div>
+          <div
+            className={`absolute ${
+              tooltipRight
+                ? "right-full -mr-1 top-1/2 -translate-y-1/2"
+                : tooltipLeft
+                ? "left-full -ml-1 top-1/2 -translate-y-1/2"
+                : tooltipBelow
+                ? "bottom-full -mb-1 left-1/2 -translate-x-1/2"
+                : "top-full -mt-1 left-1/2 -translate-x-1/2"
+            }`}
+          >
+            <div
+              className={`border-4 border-transparent ${
+                tooltipRight
+                  ? "border-r-gray-900"
+                  : tooltipLeft
+                  ? "border-l-gray-900"
+                  : tooltipBelow
+                  ? "border-b-gray-900"
+                  : "border-t-gray-900"
+              }`}
+            ></div>
           </div>
         </div>
       </div>
