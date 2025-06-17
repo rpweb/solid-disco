@@ -79,7 +79,8 @@ export const FloorPlan: React.FC = () => {
               task={task}
               isSelected={selectedTaskId === task.id}
               isHovered={hoveredTaskId === task.id}
-              onClick={() => setSelectedTaskId(task.id)}
+              onClick={() => !isAddingTask && setSelectedTaskId(task.id)}
+              disabled={isAddingTask}
             />
           ))}
 

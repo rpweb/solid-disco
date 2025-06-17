@@ -181,4 +181,27 @@ describe("FloorPlan", () => {
       screen.getByAltText("Floor Plan").parentElement!.parentElement!;
     expect(outerContainer).toHaveClass("cursor-crosshair");
   });
+
+  it("disables task markers when adding a new task", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useFloorPlan).mockReturnValue({
+      ...mockProps,
+      isAddingTask: true,
+    } as any);
+
+    render(<FloorPlan />);
+
+    // Try to click a task marker
+    const taskMarker = screen
+      .getAllByText("T")[0]
+      .closest("div[role='button']")!;
+    await user.click(taskMarker);
+
+    // Should not select the task when in adding mode
+    expect(mockProps.setSelectedTaskId).not.toHaveBeenCalled();
+
+    // Check that the marker has disabled attributes
+    expect(taskMarker).toHaveAttribute("aria-disabled", "true");
+    expect(taskMarker).toHaveClass("cursor-not-allowed", "opacity-50");
+  });
 });

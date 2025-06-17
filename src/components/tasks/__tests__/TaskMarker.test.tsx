@@ -128,4 +128,58 @@ describe("TaskMarker", () => {
 
     expect(screen.getByText("L")).toBeInTheDocument();
   });
+
+  it("does not respond to clicks when disabled", async () => {
+    const user = userEvent.setup();
+    render(
+      <TaskMarker
+        task={mockTask}
+        isSelected={false}
+        onClick={mockOnClick}
+        disabled
+      />
+    );
+
+    const marker = screen.getByRole("button");
+    await user.click(marker);
+
+    expect(mockOnClick).not.toHaveBeenCalled();
+  });
+
+  it("does not respond to keyboard when disabled", async () => {
+    const user = userEvent.setup();
+    render(
+      <TaskMarker
+        task={mockTask}
+        isSelected={false}
+        onClick={mockOnClick}
+        disabled
+      />
+    );
+
+    const marker = screen.getByRole("button");
+    marker.focus();
+
+    await user.keyboard("{Enter}");
+    await user.keyboard(" ");
+
+    expect(mockOnClick).not.toHaveBeenCalled();
+  });
+
+  it("applies disabled styles when disabled", () => {
+    render(
+      <TaskMarker
+        task={mockTask}
+        isSelected={false}
+        onClick={mockOnClick}
+        disabled
+      />
+    );
+
+    const marker = screen.getByRole("button");
+    expect(marker).toHaveClass("cursor-not-allowed", "opacity-50");
+    expect(marker).not.toHaveClass("cursor-pointer");
+    expect(marker).toHaveAttribute("aria-disabled", "true");
+    expect(marker).toHaveAttribute("tabIndex", "-1");
+  });
 });

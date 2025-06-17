@@ -12,6 +12,7 @@ interface TaskMarkerProps {
   isSelected: boolean;
   isHovered?: boolean;
   onClick: () => void;
+  disabled?: boolean;
 }
 
 export const TaskMarker: React.FC<TaskMarkerProps> = ({
@@ -19,6 +20,7 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
   isSelected,
   isHovered,
   onClick,
+  disabled = false,
 }) => {
   const setHoveredTaskId = useUIStore((state) => state.setHoveredTaskId);
   const completedCount = task.checklist.filter(
@@ -39,28 +41,29 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
   return (
     <div
       role="button"
-      tabIndex={0}
-      className={`absolute transform -translate-x-1/2 -translate-y-full cursor-pointer transition-all ${
-        isSelected ? "scale-110" : isHovered ? "scale-105" : ""
-      }`}
+      tabIndex={disabled ? -1 : 0}
+      className={`absolute transform -translate-x-1/2 -translate-y-full transition-all ${
+        disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+      } ${isSelected ? "scale-110" : isHovered ? "scale-105" : ""}`}
       style={{
         left: `${task.x}%`,
         top: `${task.y}%`,
         zIndex: isHovered ? 30 : isSelected ? 20 : 10,
       }}
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
       onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
+        if (!disabled && (e.key === "Enter" || e.key === " ")) {
           e.preventDefault();
           onClick();
         }
       }}
-      onMouseEnter={() => setHoveredTaskId(task.id)}
-      onMouseLeave={() => setHoveredTaskId(null)}
+      onMouseEnter={() => !disabled && setHoveredTaskId(task.id)}
+      onMouseLeave={() => !disabled && setHoveredTaskId(null)}
       aria-label={`Task: ${task.title}, ${percentage.toFixed(0)}% complete${
         hasBlocked ? ", has blocked items" : ""
       }`}
       aria-pressed={isSelected}
+      aria-disabled={disabled}
     >
       <div className={`relative group ${isSelected ? "animate-pulse" : ""}`}>
         {/* Task marker pin */}
