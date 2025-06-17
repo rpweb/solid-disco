@@ -234,9 +234,6 @@ export const TaskDetails: React.FC = () => {
     await updateTask(selectedTask.id, { checklist: updatedChecklist });
   };
 
-  const completedCount = selectedTask.checklist.filter(
-    (item) => item.status === "done"
-  ).length;
   const hasBlockedItems = selectedTask.checklist.some(
     (item) => item.status === "blocked"
   );
