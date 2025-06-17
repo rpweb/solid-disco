@@ -15,3 +15,36 @@ export const generateDefaultChecklist = (): ChecklistItem[] => {
     id: crypto.randomUUID(),
   }));
 };
+
+export const statusConfig = {
+  "not-started": {
+    icon: "○",
+    color: "text-gray-400",
+    bgColor: "bg-gray-100",
+    label: "Not started",
+  },
+  "in-progress": {
+    icon: "◐",
+    color: "text-yellow-600",
+    bgColor: "bg-yellow-100",
+    label: "In Progress",
+  },
+  blocked: {
+    icon: "⚠",
+    color: "text-red-600",
+    bgColor: "bg-red-100",
+    label: "Blocked",
+  },
+  "final-check": {
+    icon: "◔",
+    color: "text-blue-600",
+    bgColor: "bg-blue-100",
+    label: "Final Check awaiting",
+  },
+  done: {
+    icon: "✓",
+    color: "text-green-600",
+    bgColor: "bg-green-100",
+    label: "Done",
+  },
+} as const;

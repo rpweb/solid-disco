@@ -1,242 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { useTaskStore } from "@/stores/taskStore";
-import { useUIStore } from "@/stores/uiStore";
-import type { ChecklistItem } from "@/types/db.types";
-
-const statusConfig = {
-  "not-started": {
-    icon: "○",
-    color: "text-gray-400",
-    bgColor: "bg-gray-100",
-    label: "Not started",
-  },
-  "in-progress": {
-    icon: "◐",
-    color: "text-yellow-600",
-    bgColor: "bg-yellow-100",
-    label: "In Progress",
-  },
-  blocked: {
-    icon: "⚠",
-    color: "text-red-600",
-    bgColor: "bg-red-100",
-    label: "Blocked",
-  },
-  "final-check": {
-    icon: "◔",
-    color: "text-blue-600",
-    bgColor: "bg-blue-100",
-    label: "Final Check awaiting",
-  },
-  done: {
-    icon: "✓",
-    color: "text-green-600",
-    bgColor: "bg-green-100",
-    label: "Done",
-  },
-};
-
-const ChecklistItemComponent: React.FC<{
-  item: ChecklistItem;
-  onStatusChange: (status: string) => void;
-  onTextChange: (text: string) => void;
-  onDelete: () => void;
-}> = ({ item, onStatusChange, onTextChange, onDelete }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editText, setEditText] = useState(item.text);
-  const [showStatusMenu, setShowStatusMenu] = useState(false);
-
-  const status = statusConfig[item.status];
-
-  const handleTextSubmit = () => {
-    if (editText.trim()) {
-      onTextChange(editText.trim());
-    } else {
-      setEditText(item.text);
-    }
-    setIsEditing(false);
-  };
-
-  return (
-    <div className="group relative">
-      <div className="flex items-start space-x-3 py-3 hover:bg-gray-50 rounded-lg px-2 -mx-2">
-        {/* Status Icon/Button */}
-        <div className="relative">
-          <button
-            onClick={() => setShowStatusMenu(!showStatusMenu)}
-            className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg font-bold transition-all ${
-              item.status === "done"
-                ? "bg-green-100 text-green-600 border-2 border-green-600"
-                : item.status === "blocked"
-                ? "bg-red-100 text-red-600 border-2 border-red-600"
-                : item.status === "final-check"
-                ? "bg-blue-100 text-blue-600 border-2 border-blue-600"
-                : item.status === "in-progress"
-                ? "bg-yellow-100 text-yellow-600 border-2 border-yellow-600"
-                : "bg-white border-2 border-gray-300"
-            }`}
-          >
-            {status.icon}
-          </button>
-
-          {/* Status Dropdown */}
-          {showStatusMenu && (
-            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 py-1 min-w-[200px]">
-              {Object.entries(statusConfig).map(([value, config]) => (
-                <button
-                  key={value}
-                  onClick={() => {
-                    onStatusChange(value);
-                    setShowStatusMenu(false);
-                  }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center space-x-2 ${
-                    item.status === value ? "bg-gray-50" : ""
-                  }`}
-                >
-                  <span
-                    className={`w-6 h-6 rounded flex items-center justify-center ${config.bgColor} ${config.color}`}
-                  >
-                    {config.icon}
-                  </span>
-                  <span className="text-gray-700">{config.label}</span>
-                  {item.status === value && (
-                    <span className="ml-auto text-blue-600">✓</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Task Text */}
-        <div className="flex-1">
-          {isEditing ? (
-            <input
-              type="text"
-              value={editText}
-              onChange={(e) => setEditText(e.target.value)}
-              onBlur={handleTextSubmit}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleTextSubmit();
-                if (e.key === "Escape") {
-                  setEditText(item.text);
-                  setIsEditing(false);
-                }
-              }}
-              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              autoFocus
-            />
-          ) : (
-            <div onClick={() => setIsEditing(true)} className="cursor-text">
-              <p
-                className={`text-sm ${
-                  item.status === "done"
-                    ? "line-through text-gray-500"
-                    : "text-gray-900"
-                }`}
-              >
-                {item.text}
-              </p>
-              {item.status !== "not-started" && (
-                <p className={`text-xs mt-0.5 ${status.color}`}>
-                  {status.label}
-                  {item.status === "blocked" && ": Part installation done"}
-                  {item.status === "done" && ": Part installation done"}
-                  {item.status === "final-check" && " done"}
-                </p>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Delete Button */}
-        <button
-          onClick={onDelete}
-          className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-600 transition-all p-1"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </div>
-
-      {/* Click outside to close dropdown */}
-      {showStatusMenu && (
-        <div
-          className="fixed inset-0 z-0"
-          onClick={() => setShowStatusMenu(false)}
-        />
-      )}
-    </div>
-  );
-};
+import React from "react";
+import { useTaskDetails } from "@/hooks/useTaskDetails";
+import { ChecklistItem } from "./ChecklistItem";
 
 export const TaskDetails: React.FC = () => {
-  const { tasks, updateTask, updateChecklistItem } = useTaskStore();
-  const { selectedTaskId, setSelectedTaskId } = useUIStore();
-  const [editingTitle, setEditingTitle] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newItemText, setNewItemText] = useState("");
-  const [isExpanded, setIsExpanded] = useState(true);
-
-  const selectedTask = tasks.find((t) => t.id === selectedTaskId);
-
-  useEffect(() => {
-    if (selectedTask) {
-      setNewTitle(selectedTask.title);
-    }
-  }, [selectedTask]);
+  const {
+    selectedTask,
+    editingTitle,
+    setEditingTitle,
+    newTitle,
+    setNewTitle,
+    newItemText,
+    setNewItemText,
+    isExpanded,
+    setIsExpanded,
+    hasBlockedItems,
+    handleClose,
+    handleUpdateTitle,
+    handleAddItem,
+    handleDeleteItem,
+    handleUpdateChecklistItem,
+  } = useTaskDetails();
 
   if (!selectedTask) return null;
-
-  const handleClose = () => {
-    setSelectedTaskId(null);
-    setEditingTitle(false);
-  };
-
-  const handleUpdateTitle = async () => {
-    if (newTitle.trim() && newTitle !== selectedTask.title) {
-      await updateTask(selectedTask.id, { title: newTitle.trim() });
-    }
-    setEditingTitle(false);
-  };
-
-  const handleAddItem = async () => {
-    if (!newItemText.trim()) return;
-
-    const newItem: ChecklistItem = {
-      id: crypto.randomUUID(),
-      text: newItemText.trim(),
-      status: "not-started",
-    };
-
-    await updateTask(selectedTask.id, {
-      checklist: [...selectedTask.checklist, newItem],
-    });
-
-    setNewItemText("");
-  };
-
-  const handleDeleteItem = async (itemId: string) => {
-    const updatedChecklist = selectedTask.checklist.filter(
-      (item) => item.id !== itemId
-    );
-    await updateTask(selectedTask.id, { checklist: updatedChecklist });
-  };
-
-  const hasBlockedItems = selectedTask.checklist.some(
-    (item) => item.status === "blocked"
-  );
 
   return (
     <div className="fixed inset-0 bg-opacity-80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -329,16 +114,16 @@ export const TaskDetails: React.FC = () => {
                 {/* Checklist Items */}
                 <div className="space-y-1">
                   {selectedTask.checklist.map((item) => (
-                    <ChecklistItemComponent
+                    <ChecklistItem
                       key={item.id}
                       item={item}
                       onStatusChange={(status) =>
-                        updateChecklistItem(selectedTask.id, item.id, {
+                        handleUpdateChecklistItem(item.id, {
                           status: status as any,
                         })
                       }
                       onTextChange={(text) =>
-                        updateChecklistItem(selectedTask.id, item.id, { text })
+                        handleUpdateChecklistItem(item.id, { text })
                       }
                       onDelete={() => handleDeleteItem(item.id)}
                     />

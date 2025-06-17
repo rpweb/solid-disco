@@ -1,6 +1,6 @@
 import type { RxCollection, RxDocument } from "rxdb";
 
-export interface ChecklistItem {
+export interface ChecklistItemType {
   id: string;
   text: string;
   status: "not-started" | "in-progress" | "blocked" | "final-check" | "done";
@@ -18,7 +18,7 @@ export interface RxTaskDocumentType {
   title: string;
   x: number;
   y: number;
-  checklist: ChecklistItem[];
+  checklist: ChecklistItemType[];
   createdAt: number;
   updatedAt: number;
 }
