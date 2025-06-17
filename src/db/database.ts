@@ -41,7 +41,7 @@ async function _createDatabase(): Promise<RxDatabase<RxDatabaseCollections>> {
     storage: wrappedValidateAjvStorage({
       storage: getRxStorageDexie(),
     }),
-    ignoreDuplicate: true,
+    ignoreDuplicate: import.meta.env.DEV,
   });
 
   console.log("Adding collections...");
