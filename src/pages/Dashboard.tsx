@@ -6,8 +6,9 @@ import { TaskList } from "@/components/tasks/TaskList";
 import { TaskDetails } from "@/components/tasks/TaskDetails";
 
 export const Dashboard: React.FC = () => {
-  const { currentUser } = useAuthStore();
-  const { initializeTasks, cleanup } = useTaskStore();
+  const currentUser = useAuthStore((state) => state.currentUser);
+  const initializeTasks = useTaskStore((state) => state.initializeTasks);
+  const cleanup = useTaskStore((state) => state.cleanup);
 
   useEffect(() => {
     if (currentUser) {

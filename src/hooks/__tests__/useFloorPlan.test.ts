@@ -37,11 +37,18 @@ describe("useFloorPlan", () => {
       createTask: mockCreateTask,
     } as any);
 
-    vi.mocked(useUIStore).mockReturnValue({
-      selectedTaskId: null,
-      setSelectedTaskId: mockSetSelectedTaskId,
-      floorPlanImage: "/floor-plan.png",
-    } as any);
+    // Mock useUIStore with selector support
+    vi.mocked(useUIStore).mockImplementation((selector?: any) => {
+      const state = {
+        selectedTaskId: null,
+        setSelectedTaskId: mockSetSelectedTaskId,
+        hoveredTaskId: null,
+        setHoveredTaskId: vi.fn(),
+        floorPlanImage: "/floor-plan.png",
+        setFloorPlanImage: vi.fn(),
+      };
+      return selector ? selector(state) : state;
+    });
   });
 
   it("initializes with default state", () => {

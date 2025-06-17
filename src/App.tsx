@@ -8,7 +8,7 @@ import { useAuthStore } from "@/stores/authStore";
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { currentUser } = useAuthStore();
+  const currentUser = useAuthStore((state) => state.currentUser);
 
   if (!currentUser) {
     return <Navigate to="/login" replace />;

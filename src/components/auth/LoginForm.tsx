@@ -4,7 +4,11 @@ import { useNavigate } from "react-router-dom";
 
 export const LoginForm: React.FC = () => {
   const [name, setName] = useState("");
-  const { login, isLoading, error, clearError, currentUser } = useAuthStore();
+  const login = useAuthStore((state) => state.login);
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const error = useAuthStore((state) => state.error);
+  const clearError = useAuthStore((state) => state.clearError);
+  const currentUser = useAuthStore((state) => state.currentUser);
   const navigate = useNavigate();
 
   useEffect(() => {

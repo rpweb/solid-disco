@@ -3,8 +3,11 @@ import { useTaskStore } from "../../stores/taskStore";
 import { useUIStore } from "../../stores/uiStore";
 
 export const TaskList: React.FC = () => {
-  const { tasks, deleteTask } = useTaskStore();
-  const { selectedTaskId, setSelectedTaskId, setHoveredTaskId } = useUIStore();
+  const tasks = useTaskStore((state) => state.tasks);
+  const deleteTask = useTaskStore((state) => state.deleteTask);
+  const selectedTaskId = useUIStore((state) => state.selectedTaskId);
+  const setSelectedTaskId = useUIStore((state) => state.setSelectedTaskId);
+  const setHoveredTaskId = useUIStore((state) => state.setHoveredTaskId);
 
   const getStatusColor = (status: string) => {
     switch (status) {

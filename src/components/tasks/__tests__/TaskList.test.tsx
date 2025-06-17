@@ -46,22 +46,32 @@ describe("TaskList", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useTaskStore).mockReturnValue({
-      tasks: mockTasks,
-      deleteTask: mockDeleteTask,
-      createTask: vi.fn(),
-      updateTask: vi.fn(),
-      updateChecklistItem: vi.fn(),
-      initializeTasks: vi.fn(),
-    } as any);
-    vi.mocked(useUIStore).mockReturnValue({
-      selectedTaskId: null,
-      setSelectedTaskId: mockSetSelectedTaskId,
-      hoveredTaskId: null,
-      setHoveredTaskId: mockSetHoveredTaskId,
-      floorPlanImage: null,
-      setFloorPlanImage: vi.fn(),
-    } as any);
+
+    // Mock useTaskStore with selector support
+    vi.mocked(useTaskStore).mockImplementation((selector?: any) => {
+      const state = {
+        tasks: mockTasks,
+        deleteTask: mockDeleteTask,
+        createTask: vi.fn(),
+        updateTask: vi.fn(),
+        updateChecklistItem: vi.fn(),
+        initializeTasks: vi.fn(),
+      };
+      return selector ? selector(state) : state;
+    });
+
+    // Mock useUIStore with selector support
+    vi.mocked(useUIStore).mockImplementation((selector?: any) => {
+      const state = {
+        selectedTaskId: null,
+        setSelectedTaskId: mockSetSelectedTaskId,
+        hoveredTaskId: null,
+        setHoveredTaskId: mockSetHoveredTaskId,
+        floorPlanImage: null,
+        setFloorPlanImage: vi.fn(),
+      };
+      return selector ? selector(state) : state;
+    });
   });
 
   it("renders task count in header", () => {
@@ -70,14 +80,18 @@ describe("TaskList", () => {
   });
 
   it("shows empty state when no tasks", () => {
-    vi.mocked(useTaskStore).mockReturnValue({
-      tasks: [],
-      deleteTask: mockDeleteTask,
-      createTask: vi.fn(),
-      updateTask: vi.fn(),
-      updateChecklistItem: vi.fn(),
-      initializeTasks: vi.fn(),
-    } as any);
+    // Mock useTaskStore with empty tasks
+    vi.mocked(useTaskStore).mockImplementation((selector?: any) => {
+      const state = {
+        tasks: [],
+        deleteTask: mockDeleteTask,
+        createTask: vi.fn(),
+        updateTask: vi.fn(),
+        updateChecklistItem: vi.fn(),
+        initializeTasks: vi.fn(),
+      };
+      return selector ? selector(state) : state;
+    });
 
     render(<TaskList />);
     expect(
@@ -138,14 +152,18 @@ describe("TaskList", () => {
   });
 
   it("highlights selected task", () => {
-    vi.mocked(useUIStore).mockReturnValue({
-      selectedTaskId: "1",
-      setSelectedTaskId: mockSetSelectedTaskId,
-      hoveredTaskId: null,
-      setHoveredTaskId: mockSetHoveredTaskId,
-      floorPlanImage: null,
-      setFloorPlanImage: vi.fn(),
-    } as any);
+    // Mock useUIStore with selector support for selectedTaskId = "1"
+    vi.mocked(useUIStore).mockImplementation((selector?: any) => {
+      const state = {
+        selectedTaskId: "1",
+        setSelectedTaskId: mockSetSelectedTaskId,
+        hoveredTaskId: null,
+        setHoveredTaskId: mockSetHoveredTaskId,
+        floorPlanImage: null,
+        setFloorPlanImage: vi.fn(),
+      };
+      return selector ? selector(state) : state;
+    });
 
     render(<TaskList />);
 
@@ -201,19 +219,23 @@ describe("TaskList", () => {
   });
 
   it("handles tasks with empty checklists", () => {
-    vi.mocked(useTaskStore).mockReturnValue({
-      tasks: [
-        {
-          ...mockTasks[0],
-          checklist: [],
-        },
-      ],
-      deleteTask: mockDeleteTask,
-      createTask: vi.fn(),
-      updateTask: vi.fn(),
-      updateChecklistItem: vi.fn(),
-      initializeTasks: vi.fn(),
-    } as any);
+    // Mock useTaskStore with task that has empty checklist
+    vi.mocked(useTaskStore).mockImplementation((selector?: any) => {
+      const state = {
+        tasks: [
+          {
+            ...mockTasks[0],
+            checklist: [],
+          },
+        ],
+        deleteTask: mockDeleteTask,
+        createTask: vi.fn(),
+        updateTask: vi.fn(),
+        updateChecklistItem: vi.fn(),
+        initializeTasks: vi.fn(),
+      };
+      return selector ? selector(state) : state;
+    });
 
     render(<TaskList />);
 

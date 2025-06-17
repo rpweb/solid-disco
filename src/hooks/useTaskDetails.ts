@@ -4,8 +4,13 @@ import { useUIStore } from "@/stores/uiStore";
 import type { ChecklistItemType } from "@/types/db.types";
 
 export const useTaskDetails = () => {
-  const { tasks, updateTask, updateChecklistItem } = useTaskStore();
-  const { selectedTaskId, setSelectedTaskId } = useUIStore();
+  const tasks = useTaskStore((state) => state.tasks);
+  const updateTask = useTaskStore((state) => state.updateTask);
+  const updateChecklistItem = useTaskStore(
+    (state) => state.updateChecklistItem
+  );
+  const selectedTaskId = useUIStore((state) => state.selectedTaskId);
+  const setSelectedTaskId = useUIStore((state) => state.setSelectedTaskId);
   const [editingTitle, setEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newItemText, setNewItemText] = useState("");

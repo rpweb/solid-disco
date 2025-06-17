@@ -31,16 +31,34 @@ describe("useTaskDetails", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    vi.mocked(useTaskStore).mockReturnValue({
-      tasks: [mockTask],
-      updateTask: mockUpdateTask,
-      updateChecklistItem: mockUpdateChecklistItem,
-    } as any);
+    // Mock useTaskStore with selector support
+    vi.mocked(useTaskStore).mockImplementation((selector?: any) => {
+      const state = {
+        tasks: [mockTask],
+        updateTask: mockUpdateTask,
+        updateChecklistItem: mockUpdateChecklistItem,
+        deleteTask: vi.fn(),
+        createTask: vi.fn(),
+        initializeTasks: vi.fn(),
+        cleanup: vi.fn(),
+      };
+      return selector ? selector(state) : state;
+    });
 
-    vi.mocked(useUIStore).mockReturnValue({
-      selectedTaskId: "1",
-      setSelectedTaskId: mockSetSelectedTaskId,
-    } as any);
+    // Mock useUIStore with selector support
+    vi.mocked(useUIStore).mockImplementation((selector?: any) => {
+      const state = {
+        selectedTaskId: "1",
+        setSelectedTaskId: mockSetSelectedTaskId,
+        hoveredTaskId: null,
+        setHoveredTaskId: vi.fn(),
+        floorPlanImage: null,
+        setFloorPlanImage: vi.fn(),
+        isAddingTask: false,
+        setIsAddingTask: vi.fn(),
+      };
+      return selector ? selector(state) : state;
+    });
   });
 
   it("returns selected task based on selectedTaskId", () => {
@@ -50,10 +68,19 @@ describe("useTaskDetails", () => {
   });
 
   it("returns undefined when no task is selected", () => {
-    vi.mocked(useUIStore).mockReturnValue({
-      selectedTaskId: null,
-      setSelectedTaskId: mockSetSelectedTaskId,
-    } as any);
+    vi.mocked(useUIStore).mockImplementation((selector?: any) => {
+      const state = {
+        selectedTaskId: null,
+        setSelectedTaskId: mockSetSelectedTaskId,
+        hoveredTaskId: null,
+        setHoveredTaskId: vi.fn(),
+        floorPlanImage: null,
+        setFloorPlanImage: vi.fn(),
+        isAddingTask: false,
+        setIsAddingTask: vi.fn(),
+      };
+      return selector ? selector(state) : state;
+    });
 
     const { result } = renderHook(() => useTaskDetails());
 
@@ -266,19 +293,26 @@ describe("useTaskDetails", () => {
   });
 
   it("correctly identifies when task has no blocked items", () => {
-    vi.mocked(useTaskStore).mockReturnValue({
-      tasks: [
-        {
-          ...mockTask,
-          checklist: [
-            { id: "c1", text: "Item 1", status: "not-started" },
-            { id: "c2", text: "Item 2", status: "done" },
-          ],
-        },
-      ],
-      updateTask: mockUpdateTask,
-      updateChecklistItem: mockUpdateChecklistItem,
-    } as any);
+    vi.mocked(useTaskStore).mockImplementation((selector?: any) => {
+      const state = {
+        tasks: [
+          {
+            ...mockTask,
+            checklist: [
+              { id: "c1", text: "Item 1", status: "not-started" },
+              { id: "c2", text: "Item 2", status: "done" },
+            ],
+          },
+        ],
+        updateTask: mockUpdateTask,
+        updateChecklistItem: mockUpdateChecklistItem,
+        deleteTask: vi.fn(),
+        createTask: vi.fn(),
+        initializeTasks: vi.fn(),
+        cleanup: vi.fn(),
+      };
+      return selector ? selector(state) : state;
+    });
 
     const { result } = renderHook(() => useTaskDetails());
 

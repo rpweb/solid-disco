@@ -20,7 +20,7 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
   isHovered,
   onClick,
 }) => {
-  const { setHoveredTaskId } = useUIStore();
+  const setHoveredTaskId = useUIStore((state) => state.setHoveredTaskId);
   const completedCount = task.checklist.filter(
     (item) => item.status === "done"
   ).length;

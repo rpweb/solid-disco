@@ -13,7 +13,6 @@ export const TaskDetails: React.FC = () => {
     setNewItemText,
     isExpanded,
     setIsExpanded,
-    hasBlockedItems,
     showNewItemInput,
     newItemInputRef,
     handleClose,
