@@ -1,4 +1,5 @@
 import React from "react";
+import { Modal } from "@/components/ui/Modal";
 
 interface NewTaskModalProps {
   newTaskTitle: string;
@@ -14,8 +15,8 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   onCreate,
 }) => {
   return (
-    <div className="fixed inset-0 bg-opacity-80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+    <Modal isOpen onClose={onCancel}>
+      <div className="p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">New Task</h3>
         <input
           type="text"
@@ -42,6 +43,6 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };
