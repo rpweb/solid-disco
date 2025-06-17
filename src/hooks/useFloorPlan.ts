@@ -24,11 +24,10 @@ export const useFloorPlan = () => {
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
 
-    // Round to 2 decimal places to ensure multipleOf 0.01
-    // Using parseFloat to avoid floating point precision issues
+    // Round to 2 decimal places for display purposes
     setTempMarker({
-      x: parseFloat((Math.round(x * 100) / 100).toFixed(2)),
-      y: parseFloat((Math.round(y * 100) / 100).toFixed(2)),
+      x: Math.round(x * 100) / 100,
+      y: Math.round(y * 100) / 100,
     });
     setShowTaskModal(true);
   };

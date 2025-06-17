@@ -10,9 +10,13 @@ import type { RxDatabaseCollections } from "@/types/db.types";
 
 // Import only in development
 if (import.meta.env.DEV) {
-  import("rxdb/plugins/dev-mode").then((module) => {
-    addRxPlugin(module.RxDBDevModePlugin);
-  });
+  import("rxdb/plugins/dev-mode")
+    .then((module) => {
+      addRxPlugin(module.RxDBDevModePlugin);
+    })
+    .catch((error) => {
+      console.warn("Failed to load RxDB dev-mode plugin:", error);
+    });
 }
 
 // Add plugins

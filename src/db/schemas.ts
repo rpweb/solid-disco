@@ -50,13 +50,11 @@ export const taskSchema: RxJsonSchema<RxTaskDocumentType> = {
       type: "number",
       minimum: 0,
       maximum: 100,
-      multipleOf: 0.01,
     },
     y: {
       type: "number",
       minimum: 0,
       maximum: 100,
-      multipleOf: 0.01,
     },
     checklist: {
       type: "array",
