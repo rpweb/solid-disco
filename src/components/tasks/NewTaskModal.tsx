@@ -15,7 +15,7 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   onCreate,
 }) => {
   return (
-    <Modal isOpen onClose={onCancel}>
+    <Modal isOpen onClose={onCancel} closeOnBackdrop={false}>
       <div className="p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">New Task</h3>
         <input
