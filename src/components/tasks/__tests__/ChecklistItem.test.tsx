@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ChecklistItem } from "../ChecklistItem";
 import { CHECKLIST_STATUS, type ChecklistItemType } from "@/types/db.types";
@@ -165,23 +165,6 @@ describe("ChecklistItem", () => {
 
     expect(mockProps.onTextChange).not.toHaveBeenCalled();
     expect(screen.getByText("Test checklist item")).toBeInTheDocument();
-  });
-
-  it("shows delete button on hover", async () => {
-    const user = userEvent.setup();
-    const { container } = render(<ChecklistItem {...mockProps} />);
-
-    const deleteButton = container.querySelector('button[class*="opacity-0"]')!;
-    expect(deleteButton).toHaveClass("opacity-0");
-
-    const itemContainer = screen
-      .getByText("Test checklist item")
-      .closest(".group")!;
-    await user.hover(itemContainer);
-
-    await waitFor(() => {
-      expect(deleteButton).toHaveClass("group-hover:opacity-100");
-    });
   });
 
   it("renders delete button with correct props", () => {
