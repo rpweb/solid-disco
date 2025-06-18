@@ -22,7 +22,7 @@ export const ZoomControls: React.FC<ZoomControlsProps> = ({
       <button
         onClick={onZoomOut}
         disabled={zoomLevel <= minZoom}
-        className="p-1 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="p-1 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         title="Zoom out"
       >
         <svg
@@ -41,7 +41,7 @@ export const ZoomControls: React.FC<ZoomControlsProps> = ({
       </button>
       <button
         onClick={onResetZoom}
-        className="px-2 py-1 text-sm font-medium hover:bg-gray-200 rounded"
+        className="px-2 py-1 text-sm font-medium hover:bg-gray-200 rounded cursor-pointer"
         title="Reset zoom"
       >
         {Math.round(zoomLevel * 100)}%
@@ -49,7 +49,7 @@ export const ZoomControls: React.FC<ZoomControlsProps> = ({
       <button
         onClick={onZoomIn}
         disabled={zoomLevel >= maxZoom}
-        className="p-1 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="p-1 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         title="Zoom in"
       >
         <svg
