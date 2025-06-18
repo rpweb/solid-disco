@@ -38,7 +38,7 @@ export const TaskList: React.FC = () => {
             return (
               <div
                 key={task.id}
-                className={`px-6 py-4 hover:bg-gray-50 transition-colors ${
+                className={`px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer ${
                   selectedTaskId === task.id ? "bg-blue-50" : ""
                 }`}
                 onMouseEnter={() => setHoveredTaskId(task.id)}
@@ -46,7 +46,7 @@ export const TaskList: React.FC = () => {
               >
                 <div className="flex items-start justify-between">
                   <button
-                    className="flex-1 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                    className="flex-1 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 rounded cursor-pointer"
                     onClick={() => setSelectedTaskId(task.id)}
                     aria-label={`Select task: ${task.title}`}
                   >
