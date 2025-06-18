@@ -55,11 +55,11 @@ describe("TaskMarker", () => {
     );
 
     const marker = container.firstChild as HTMLElement;
-    expect(marker.className).toContain("scale-110");
     expect(marker.style.zIndex).toBe("20");
 
     const innerDiv = marker.firstChild as HTMLElement;
     expect(innerDiv.className).toContain("animate-pulse");
+    expect(innerDiv.style.transform).toContain("scale");
   });
 
   it("calls onClick when marker is clicked", async () => {

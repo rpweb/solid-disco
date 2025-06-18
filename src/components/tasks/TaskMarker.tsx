@@ -13,6 +13,7 @@ interface TaskMarkerProps {
   isHovered?: boolean;
   onClick: () => void;
   disabled?: boolean;
+  zoomLevel?: number;
 }
 
 export const TaskMarker: React.FC<TaskMarkerProps> = ({
@@ -21,6 +22,7 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
   isHovered,
   onClick,
   disabled = false,
+  zoomLevel = 1,
 }) => {
   const setHoveredTaskId = useUIStore((state) => state.setHoveredTaskId);
   const completedCount = task.checklist.filter(
@@ -38,17 +40,27 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
   const tooltipRight = task.x < 15;
   const tooltipLeft = task.x > 85;
 
+  // Calculate pin scale based on zoom level
+  // Pins scale slower than the map (square root gives nice scaling curve)
+  const pinScale = Math.sqrt(zoomLevel);
+
+  // Additional scale for hover/selected states
+  const interactionScale = isSelected ? 1.1 : isHovered ? 1.05 : 1;
+  const finalScale = (1 / zoomLevel) * pinScale * interactionScale;
+
   return (
     <div
       role="button"
       tabIndex={disabled ? -1 : 0}
-      className={`absolute transform -translate-x-1/2 -translate-y-full transition-all ${
+      className={`absolute transition-all ${
         disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
-      } ${isSelected ? "scale-110" : isHovered ? "scale-105" : ""}`}
+      }`}
       style={{
         left: `${task.x}%`,
         top: `${task.y}%`,
         zIndex: isHovered ? 30 : isSelected ? 20 : 10,
+        // Only positioning transform here
+        transform: `translate(-50%, -100%)`,
       }}
       onClick={disabled ? undefined : onClick}
       onKeyDown={(e) => {
@@ -65,7 +77,14 @@ export const TaskMarker: React.FC<TaskMarkerProps> = ({
       aria-pressed={isSelected}
       aria-disabled={disabled}
     >
-      <div className={`relative group ${isSelected ? "animate-pulse" : ""}`}>
+      <div
+        className={`relative group ${isSelected ? "animate-pulse" : ""}`}
+        style={{
+          // Apply counter-scale only to visual content
+          transform: `scale(${finalScale})`,
+          transformOrigin: "center bottom", // Scale from bottom since pin points down
+        }}
+      >
         {/* Task marker pin */}
         <div className="relative">
           {/* Pin shape */}

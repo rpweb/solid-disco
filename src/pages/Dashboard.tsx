@@ -31,7 +31,7 @@ export const Dashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         {/* Floor Plan */}
-        <div className="bg-white rounded-lg shadow p-6 xl:col-span-2">
+        <div className="bg-white rounded-lg shadow xl:col-span-2">
           <FloorPlan />
         </div>
 

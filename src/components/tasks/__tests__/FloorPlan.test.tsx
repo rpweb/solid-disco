@@ -3,12 +3,19 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FloorPlan } from "../FloorPlan";
 import { useFloorPlan } from "@/hooks/useFloorPlan";
+import { useZoom } from "@/hooks/useZoom";
 
-// Mock the custom hook
+// Mock the custom hooks
 vi.mock("@/hooks/useFloorPlan");
+vi.mock("@/hooks/useZoom");
+
+// Mock the ZoomControls component
+vi.mock("../ZoomControls", () => ({
+  ZoomControls: vi.fn(() => null),
+}));
 
 describe("FloorPlan", () => {
-  const mockProps = {
+  const mockFloorPlanProps = {
     containerRef: { current: null },
     isAddingTask: false,
     tempMarker: null,
@@ -33,16 +40,31 @@ describe("FloorPlan", () => {
     ],
     selectedTaskId: null,
     setSelectedTaskId: vi.fn(),
+    hoveredTaskId: null,
     floorPlanImage: "/test-floor-plan.png",
     handleFloorPlanClick: vi.fn(),
     handleCreateTask: vi.fn(),
     handleCancelTask: vi.fn(),
     toggleAddingMode: vi.fn(),
+    handleTouchStart: vi.fn(),
+    handleTouchMove: vi.fn(),
+    handleTouchEnd: vi.fn(),
+  };
+
+  const mockZoomProps = {
+    zoomLevel: 1,
+    setZoomLevel: vi.fn(),
+    handleZoomIn: vi.fn(),
+    handleZoomOut: vi.fn(),
+    handleResetZoom: vi.fn(),
+    minZoom: 1,
+    maxZoom: 2.5,
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useFloorPlan).mockReturnValue(mockProps as any);
+    vi.mocked(useFloorPlan).mockReturnValue(mockFloorPlanProps as any);
+    vi.mocked(useZoom).mockReturnValue(mockZoomProps);
   });
 
   it("renders floor plan with title and add button", () => {
@@ -63,7 +85,7 @@ describe("FloorPlan", () => {
 
   it("shows placeholder when no floor plan image", () => {
     vi.mocked(useFloorPlan).mockReturnValue({
-      ...mockProps,
+      ...mockFloorPlanProps,
       floorPlanImage: null,
     } as any);
 
@@ -89,12 +111,12 @@ describe("FloorPlan", () => {
     const addButton = screen.getByRole("button", { name: "Add Task" });
     await user.click(addButton);
 
-    expect(mockProps.toggleAddingMode).toHaveBeenCalledOnce();
+    expect(mockFloorPlanProps.toggleAddingMode).toHaveBeenCalledOnce();
   });
 
   it("shows cancel button and instructions when in adding mode", () => {
     vi.mocked(useFloorPlan).mockReturnValue({
-      ...mockProps,
+      ...mockFloorPlanProps,
       isAddingTask: true,
     } as any);
 
@@ -115,12 +137,12 @@ describe("FloorPlan", () => {
     const floorPlanContainer = screen.getByAltText("Floor Plan").parentElement!;
     await user.click(floorPlanContainer);
 
-    expect(mockProps.handleFloorPlanClick).toHaveBeenCalled();
+    expect(mockFloorPlanProps.handleFloorPlanClick).toHaveBeenCalled();
   });
 
   it("shows temporary marker when placing a task", () => {
     vi.mocked(useFloorPlan).mockReturnValue({
-      ...mockProps,
+      ...mockFloorPlanProps,
       isAddingTask: true,
       tempMarker: { x: 50, y: 50 },
     } as any);
@@ -138,7 +160,7 @@ describe("FloorPlan", () => {
 
   it("renders NewTaskModal when showTaskModal is true", () => {
     vi.mocked(useFloorPlan).mockReturnValue({
-      ...mockProps,
+      ...mockFloorPlanProps,
       showTaskModal: true,
       newTaskTitle: "New Task",
     } as any);
@@ -159,33 +181,35 @@ describe("FloorPlan", () => {
     const firstTaskMarker = taskMarkers[0].closest("div[style]")!;
     await user.click(firstTaskMarker);
 
-    expect(mockProps.setSelectedTaskId).toHaveBeenCalledWith("1");
+    expect(mockFloorPlanProps.setSelectedTaskId).toHaveBeenCalledWith("1");
   });
 
   it("applies correct cursor style based on mode", () => {
     const { rerender } = render(<FloorPlan />);
 
-    // The outer container is the one with overflow and cursor styles
-    let outerContainer =
-      screen.getByAltText("Floor Plan").parentElement!.parentElement!;
-    expect(outerContainer).toHaveClass("cursor-default");
+    // The cursor styles are on the div with overflow-auto and bg-gray-100
+    let container = document.querySelector(
+      ".bg-gray-100.overflow-auto"
+    ) as HTMLElement;
+    expect(container).toHaveClass("cursor-default");
 
     vi.mocked(useFloorPlan).mockReturnValue({
-      ...mockProps,
+      ...mockFloorPlanProps,
       isAddingTask: true,
     } as any);
 
     rerender(<FloorPlan />);
 
-    outerContainer =
-      screen.getByAltText("Floor Plan").parentElement!.parentElement!;
-    expect(outerContainer).toHaveClass("cursor-crosshair");
+    container = document.querySelector(
+      ".bg-gray-100.overflow-auto"
+    ) as HTMLElement;
+    expect(container).toHaveClass("cursor-crosshair");
   });
 
   it("disables task markers when adding a new task", async () => {
     const user = userEvent.setup();
     vi.mocked(useFloorPlan).mockReturnValue({
-      ...mockProps,
+      ...mockFloorPlanProps,
       isAddingTask: true,
     } as any);
 
@@ -198,7 +222,7 @@ describe("FloorPlan", () => {
     await user.click(taskMarker);
 
     // Should not select the task when in adding mode
-    expect(mockProps.setSelectedTaskId).not.toHaveBeenCalled();
+    expect(mockFloorPlanProps.setSelectedTaskId).not.toHaveBeenCalled();
 
     // Check that the marker has disabled attributes
     expect(taskMarker).toHaveAttribute("aria-disabled", "true");
