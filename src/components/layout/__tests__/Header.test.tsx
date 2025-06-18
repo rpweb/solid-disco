@@ -1,4 +1,3 @@
-import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +17,11 @@ describe("Header", () => {
 
   const defaultAuthState = {
     currentUser: null,
+    isLoading: false,
+    error: null,
+    login: vi.fn(),
     logout: mockLogout,
+    clearError: vi.fn(),
   };
 
   beforeEach(() => {

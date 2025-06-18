@@ -1,4 +1,3 @@
-import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +21,7 @@ describe("LoginForm", () => {
     isLoading: false,
     error: null,
     login: mockLogin,
+    logout: vi.fn(),
     clearError: mockClearError,
   };
 

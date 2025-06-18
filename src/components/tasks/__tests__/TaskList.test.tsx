@@ -106,8 +106,6 @@ describe("TaskList", () => {
 
     expect(screen.getByText("Task 1")).toBeInTheDocument();
     expect(screen.getByText("Task 2")).toBeInTheDocument();
-    expect(screen.getByText("Position: (25.5%, 30.2%)")).toBeInTheDocument();
-    expect(screen.getByText("Position: (50.0%, 60.0%)")).toBeInTheDocument();
   });
 
   it("shows progress information", () => {

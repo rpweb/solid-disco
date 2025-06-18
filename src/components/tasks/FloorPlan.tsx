@@ -29,7 +29,6 @@ export const FloorPlan: React.FC = () => {
   // Zoom functionality
   const {
     zoomLevel,
-    setZoomLevel,
     handleZoomIn,
     handleZoomOut,
     handleResetZoom,

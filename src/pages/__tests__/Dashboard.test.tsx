@@ -1,4 +1,3 @@
-import React from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Dashboard } from "../Dashboard";
@@ -28,11 +27,24 @@ describe("Dashboard", () => {
 
   const defaultAuthState = {
     currentUser: null,
+    isLoading: false,
+    error: null,
+    login: vi.fn(),
+    logout: vi.fn(),
+    clearError: vi.fn(),
   };
 
   const defaultTaskState = {
+    tasks: [],
+    isLoading: false,
+    error: null,
+    subscription: null,
     initializeTasks: mockInitializeTasks,
     cleanup: mockCleanup,
+    createTask: vi.fn(),
+    updateTask: vi.fn(),
+    deleteTask: vi.fn(),
+    updateChecklistItem: vi.fn(),
   };
 
   beforeEach(() => {
@@ -92,6 +104,7 @@ describe("Dashboard", () => {
     it("should initialize tasks when user is logged in", () => {
       vi.mocked(useAuthStore).mockImplementation((selector) => {
         const state = {
+          ...defaultAuthState,
           currentUser: {
             id: "user-123",
             name: "John Doe",
@@ -122,6 +135,7 @@ describe("Dashboard", () => {
       // Update to have a user
       vi.mocked(useAuthStore).mockImplementation((selector) => {
         const state = {
+          ...defaultAuthState,
           currentUser: {
             id: "user-456",
             name: "Jane Doe",
@@ -152,6 +166,7 @@ describe("Dashboard", () => {
     it("should call cleanup when user changes", () => {
       vi.mocked(useAuthStore).mockImplementation((selector) => {
         const state = {
+          ...defaultAuthState,
           currentUser: {
             id: "user-123",
             name: "John Doe",
@@ -166,6 +181,7 @@ describe("Dashboard", () => {
       // Change user
       vi.mocked(useAuthStore).mockImplementation((selector) => {
         const state = {
+          ...defaultAuthState,
           currentUser: {
             id: "user-456",
             name: "Jane Doe",

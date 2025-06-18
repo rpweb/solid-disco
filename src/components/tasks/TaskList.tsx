@@ -54,9 +54,6 @@ export const TaskList: React.FC = () => {
                       <h4 className="text-sm font-medium text-gray-900">
                         {task.title}
                       </h4>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Position: ({task.x.toFixed(1)}%, {task.y.toFixed(1)}%)
-                      </p>
 
                       {/* Progress bar */}
                       <div className="mt-3">
