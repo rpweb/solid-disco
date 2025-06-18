@@ -1,6 +1,10 @@
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { useTaskStore } from "@/stores/taskStore";
 import { useUIStore } from "@/stores/uiStore";
+import {
+  setupTouchListeners,
+  type MinimalTouchEvent,
+} from "@/utils/touch.utils";
 
 export const useFloorPlan = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -11,8 +15,9 @@ export const useFloorPlan = () => {
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [showTaskModal, setShowTaskModal] = useState(false);
 
-  // Touch handling for pinch zoom
-  const touchStartDistance = useRef<number | null>(null);
+  // Touch handling for tap detection
+  const touchStartPosition = useRef<{ x: number; y: number } | null>(null);
+  const touchMoved = useRef(false);
 
   const { tasks, createTask } = useTaskStore();
   const selectedTaskId = useUIStore((state) => state.selectedTaskId);
@@ -68,37 +73,79 @@ export const useFloorPlan = () => {
     }
   };
 
-  // Calculate touch distance for pinch zoom
-  const getTouchDistance = (touches: React.TouchList) => {
-    if (touches.length < 2) return null;
-    const dx = touches[0].clientX - touches[1].clientX;
-    const dy = touches[0].clientY - touches[1].clientY;
-    return Math.sqrt(dx * dx + dy * dy);
-  };
+  const handleTouchStart = useCallback(
+    (e: MinimalTouchEvent) => {
+      touchMoved.current = false;
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length === 2) {
-      touchStartDistance.current = getTouchDistance(e.touches);
+      if (e.touches.length === 1 && isAddingTask) {
+        // Store touch start position for tap detection
+        const touch = e.touches[0];
+        touchStartPosition.current = {
+          x: touch.clientX,
+          y: touch.clientY,
+        };
+      }
+    },
+    [isAddingTask]
+  );
+
+  const handleTouchMove = useCallback(() => {
+    if (touchStartPosition.current) {
+      // Mark as moved to prevent tap action
+      touchMoved.current = true;
     }
   }, []);
 
-  const handleTouchMove = useCallback(
-    (e: React.TouchEvent, onZoom: (scale: number) => void) => {
-      if (e.touches.length === 2 && touchStartDistance.current) {
-        const currentDistance = getTouchDistance(e.touches);
-        if (currentDistance) {
-          const scale = currentDistance / touchStartDistance.current;
-          onZoom(scale);
-          touchStartDistance.current = currentDistance;
+  const handleTouchEnd = useCallback(
+    (e: MinimalTouchEvent) => {
+      // Handle tap for adding task
+      if (
+        isAddingTask &&
+        !touchMoved.current &&
+        touchStartPosition.current &&
+        e.changedTouches.length === 1 &&
+        containerRef.current
+      ) {
+        const touch = e.changedTouches[0];
+        const startPos = touchStartPosition.current;
+
+        // Check if touch end is close to start (within 10 pixels)
+        const dx = touch.clientX - startPos.x;
+        const dy = touch.clientY - startPos.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < 10) {
+          const rect = containerRef.current.getBoundingClientRect();
+          const x = ((touch.clientX - rect.left) / rect.width) * 100;
+          const y = ((touch.clientY - rect.top) / rect.height) * 100;
+
+          // Round to 2 decimal places for display purposes
+          setTempMarker({
+            x: Math.round(x * 100) / 100,
+            y: Math.round(y * 100) / 100,
+          });
+          setShowTaskModal(true);
         }
       }
+
+      // Reset touch tracking
+      touchStartPosition.current = null;
+      touchMoved.current = false;
     },
-    []
+    [isAddingTask]
   );
 
-  const handleTouchEnd = useCallback(() => {
-    touchStartDistance.current = null;
-  }, []);
+  // Set up touch event listeners
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    return setupTouchListeners(container, {
+      onTouchStart: handleTouchStart,
+      onTouchMove: handleTouchMove,
+      onTouchEnd: handleTouchEnd,
+    });
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
 
   return {
     containerRef,
@@ -116,8 +163,5 @@ export const useFloorPlan = () => {
     handleCreateTask,
     handleCancelTask,
     toggleAddingMode,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
   };
 };

@@ -3,7 +3,9 @@ import { useFloorPlan } from "@/hooks/useFloorPlan";
 import { useZoom } from "@/hooks/useZoom";
 import { TaskMarker } from "./TaskMarker";
 import { NewTaskModal } from "./NewTaskModal";
-import { ZoomControls } from "./ZoomControls";
+import { FloorPlanToolbar } from "./FloorPlanToolbar";
+import { FloorPlanImage } from "./FloorPlanImage";
+import { TempMarker } from "./TempMarker";
 
 export const FloorPlan: React.FC = () => {
   const {
@@ -22,9 +24,6 @@ export const FloorPlan: React.FC = () => {
     handleCreateTask,
     handleCancelTask,
     toggleAddingMode,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
   } = useFloorPlan();
 
   // Zoom functionality
@@ -41,32 +40,16 @@ export const FloorPlan: React.FC = () => {
   return (
     <div className="relative">
       {/* Toolbar */}
-      <div className="flex items-center justify-between mb-4 p-6">
-        <h3 className="text-lg font-medium text-gray-900">Floor Plan</h3>
-        <div className="flex items-center gap-2">
-          {/* Zoom controls */}
-          <ZoomControls
-            zoomLevel={zoomLevel}
-            minZoom={minZoom}
-            maxZoom={maxZoom}
-            onZoomIn={handleZoomIn}
-            onZoomOut={handleZoomOut}
-            onResetZoom={handleResetZoom}
-          />
-
-          {/* Add task button */}
-          <button
-            onClick={toggleAddingMode}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-              isAddingTask
-                ? "bg-red-600 hover:bg-red-700 text-white"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
-            }`}
-          >
-            {isAddingTask ? "Cancel Adding" : "Add Task"}
-          </button>
-        </div>
-      </div>
+      <FloorPlanToolbar
+        isAddingTask={isAddingTask}
+        toggleAddingMode={toggleAddingMode}
+        zoomLevel={zoomLevel}
+        minZoom={minZoom}
+        maxZoom={maxZoom}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+        onResetZoom={handleResetZoom}
+      />
 
       {/* Floor plan container with dynamic height */}
       <div
@@ -94,7 +77,7 @@ export const FloorPlan: React.FC = () => {
           <div
             ref={containerRef}
             className={`
-              relative touch-none aspect-[5/3]
+              relative aspect-[5/3] origin-top select-none
               ${
                 zoomLevel === 1
                   ? "w-full h-auto min-w-[1000px] xl:min-w-0 min-h-[600px] xl:min-h-0 max-w-full"
@@ -102,37 +85,13 @@ export const FloorPlan: React.FC = () => {
               }
             `}
             style={{
-              // Only dynamic transform values
+              // Only dynamic transform values that can't be done with Tailwind
               transform: zoomLevel === 1 ? "none" : `scale(${zoomLevel})`,
-              transformOrigin: "center top",
             }}
             onClick={handleFloorPlanClick}
-            onTouchStart={handleTouchStart}
-            onTouchMove={(e) =>
-              handleTouchMove(e, (scale: number) => {
-                setZoomLevel((prev) => {
-                  const newZoom = prev * scale;
-                  return Math.max(minZoom, Math.min(maxZoom, newZoom));
-                });
-              })
-            }
-            onTouchEnd={handleTouchEnd}
           >
             {/* Floor plan image */}
-            {floorPlanImage ? (
-              <img
-                src={floorPlanImage}
-                alt="Floor Plan"
-                className="absolute inset-0 w-full h-full object-contain"
-                draggable={false}
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <p className="text-gray-400 text-sm">
-                  No floor plan image uploaded
-                </p>
-              </div>
-            )}
+            <FloorPlanImage floorPlanImage={floorPlanImage} />
 
             {/* Task markers */}
             {tasks.map((task) => (
@@ -148,18 +107,7 @@ export const FloorPlan: React.FC = () => {
             ))}
 
             {/* Temporary marker while adding */}
-            {tempMarker && (
-              <div
-                className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-                style={{
-                  left: `${tempMarker.x}%`,
-                  top: `${tempMarker.y}%`,
-                }}
-              >
-                <div className="w-8 h-8 rounded-full bg-blue-500 opacity-50 animate-ping" />
-                <div className="absolute inset-0 w-8 h-8 rounded-full bg-blue-500" />
-              </div>
-            )}
+            {tempMarker && <TempMarker x={tempMarker.x} y={tempMarker.y} />}
           </div>
         </div>
       </div>
