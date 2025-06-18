@@ -1,28 +1,35 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useFloorPlan } from "../useFloorPlan";
-import { useTaskStore } from "@/stores/taskStore";
-import { useUIStore } from "@/stores/uiStore";
+import { useTaskStore, type TaskState } from "@/stores/taskStore";
+import { useUIStore, type UIState } from "@/stores/uiStore";
+import type { RxTaskDocumentType } from "@/types/db.types";
 
 // Mock the stores
 vi.mock("@/stores/taskStore");
 vi.mock("@/stores/uiStore");
 
 describe("useFloorPlan", () => {
-  const mockTasks = [
+  const mockTasks: RxTaskDocumentType[] = [
     {
       id: "1",
+      userId: "user1",
       title: "Task 1",
       x: 25,
       y: 30,
       checklist: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
     },
     {
       id: "2",
+      userId: "user1",
       title: "Task 2",
       x: 75,
       y: 60,
       checklist: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
     },
   ];
 
@@ -35,20 +42,24 @@ describe("useFloorPlan", () => {
     vi.mocked(useTaskStore).mockReturnValue({
       tasks: mockTasks,
       createTask: mockCreateTask,
-    } as any);
+    } as Pick<TaskState, "tasks" | "createTask">);
 
     // Mock useUIStore with selector support
-    vi.mocked(useUIStore).mockImplementation((selector?: any) => {
-      const state = {
-        selectedTaskId: null,
-        setSelectedTaskId: mockSetSelectedTaskId,
-        hoveredTaskId: null,
-        setHoveredTaskId: vi.fn(),
-        floorPlanImage: "/floor-plan.png",
-        setFloorPlanImage: vi.fn(),
-      };
-      return selector ? selector(state) : state;
-    });
+    vi.mocked(useUIStore).mockImplementation(
+      <T>(selector?: (state: UIState) => T) => {
+        const state: UIState = {
+          isAddingTask: false,
+          selectedTaskId: null,
+          setSelectedTaskId: mockSetSelectedTaskId,
+          hoveredTaskId: null,
+          setHoveredTaskId: vi.fn(),
+          floorPlanImage: "/floor-plan.png",
+          setFloorPlanImage: vi.fn(),
+          setIsAddingTask: vi.fn(),
+        };
+        return selector ? selector(state) : (state as T);
+      }
+    );
   });
 
   it("initializes with default state", () => {

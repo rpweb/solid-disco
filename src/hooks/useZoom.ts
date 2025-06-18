@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 interface UseZoomOptions {
   initialZoom?: number;
@@ -15,17 +15,17 @@ export const useZoom = ({
 }: UseZoomOptions = {}) => {
   const [zoomLevel, setZoomLevel] = useState(initialZoom);
 
-  const handleZoomIn = () => {
+  const handleZoomIn = useCallback(() => {
     setZoomLevel((prev) => Math.min(prev + zoomStep, maxZoom));
-  };
+  }, [zoomStep, maxZoom]);
 
-  const handleZoomOut = () => {
+  const handleZoomOut = useCallback(() => {
     setZoomLevel((prev) => Math.max(prev - zoomStep, minZoom));
-  };
+  }, [zoomStep, minZoom]);
 
-  const handleResetZoom = () => {
+  const handleResetZoom = useCallback(() => {
     setZoomLevel(1);
-  };
+  }, []);
 
   // Keyboard shortcuts for zoom
   useEffect(() => {
@@ -54,7 +54,7 @@ export const useZoom = ({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [handleZoomIn, handleZoomOut, handleResetZoom]);
 
   return {
     zoomLevel,

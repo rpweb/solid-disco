@@ -2,34 +2,55 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { act, renderHook } from "@testing-library/react";
 import { useAuthStore } from "../authStore";
 import { getDatabase } from "@/db/database";
+import type { RxDatabase, RxDocument } from "rxdb";
+import type {
+  RxDatabaseCollections,
+  RxUserDocumentType,
+} from "@/types/db.types";
 
 // Mock dependencies
 vi.mock("@/db/database");
 
+// Mock types
+type MockRxUserDocument = RxDocument<RxUserDocumentType> & {
+  toJSON: () => RxUserDocumentType;
+};
+
+type MockDbMethods = {
+  users: {
+    find: () => {
+      exec: () => Promise<MockRxUserDocument[]>;
+    };
+    insert: (data: RxUserDocumentType) => Promise<MockRxUserDocument>;
+  };
+};
+
 describe("authStore", () => {
-  const mockUser = {
+  const mockUser: RxUserDocumentType = {
     id: "user1",
     name: "Test User",
     createdAt: Date.now(),
   };
 
-  const mockUserDoc = {
+  const mockUserDoc: MockRxUserDocument = {
     ...mockUser,
     toJSON: () => mockUser,
-  };
+  } as MockRxUserDocument;
 
-  const mockDb = {
+  const mockDb: MockDbMethods = {
     users: {
-      find: vi.fn().mockReturnValue({
-        exec: vi.fn(),
-      }),
+      find: vi.fn(() => ({
+        exec: vi.fn().mockResolvedValue([mockUserDoc]),
+      })),
       insert: vi.fn().mockResolvedValue(mockUserDoc),
     },
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(getDatabase).mockResolvedValue(mockDb as any);
+    vi.mocked(getDatabase).mockResolvedValue(
+      mockDb as unknown as RxDatabase<RxDatabaseCollections>
+    );
 
     // Reset store state
     act(() => {
@@ -43,8 +64,6 @@ describe("authStore", () => {
 
   describe("login", () => {
     it("successfully logs in an existing user", async () => {
-      mockDb.users.find().exec.mockResolvedValueOnce([mockUserDoc]);
-
       const { result } = renderHook(() => useAuthStore());
 
       await act(async () => {
@@ -60,7 +79,9 @@ describe("authStore", () => {
     });
 
     it("creates a new user if not exists", async () => {
-      mockDb.users.find().exec.mockResolvedValueOnce([]);
+      mockDb.users.find = vi.fn(() => ({
+        exec: vi.fn().mockResolvedValue([]),
+      }));
 
       const { result } = renderHook(() => useAuthStore());
 
@@ -82,11 +103,14 @@ describe("authStore", () => {
     });
 
     it("sets loading state during login", async () => {
-      let resolvePromise: (value: any) => void;
-      const promise = new Promise((resolve) => {
+      let resolvePromise: (value: MockRxUserDocument[]) => void;
+      const promise = new Promise<MockRxUserDocument[]>((resolve) => {
         resolvePromise = resolve;
       });
-      mockDb.users.find().exec.mockReturnValueOnce(promise);
+
+      mockDb.users.find = vi.fn(() => ({
+        exec: vi.fn().mockReturnValue(promise),
+      }));
 
       const { result } = renderHook(() => useAuthStore());
 
@@ -106,7 +130,9 @@ describe("authStore", () => {
     });
 
     it("handles database errors", async () => {
-      mockDb.users.find().exec.mockRejectedValueOnce(new Error("DB Error"));
+      mockDb.users.find = vi.fn(() => ({
+        exec: vi.fn().mockRejectedValue(new Error("DB Error")),
+      }));
 
       const { result } = renderHook(() => useAuthStore());
 
@@ -120,8 +146,6 @@ describe("authStore", () => {
     });
 
     it("queries with correct name selector", async () => {
-      mockDb.users.find().exec.mockResolvedValueOnce([mockUserDoc]);
-
       const { result } = renderHook(() => useAuthStore());
 
       await act(async () => {

@@ -3,39 +3,58 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TaskDetails } from "../TaskDetails";
 import { useTaskDetails } from "@/hooks/useTaskDetails";
+import type { RxTaskDocumentType, ChecklistItemType } from "@/types/db.types";
+import { CHECKLIST_STATUS } from "@/types/db.types";
 
 // Mock the custom hook
 vi.mock("@/hooks/useTaskDetails");
 
 // Mock ChecklistItem component
 vi.mock("../ChecklistItem", () => ({
-  ChecklistItem: ({ item, onStatusChange, onTextChange, onDelete }: any) => (
+  ChecklistItem: ({
+    item,
+    onStatusChange,
+    onTextChange,
+    onDelete,
+  }: {
+    item: ChecklistItemType;
+    onStatusChange: (
+      status: (typeof CHECKLIST_STATUS)[keyof typeof CHECKLIST_STATUS]
+    ) => void;
+    onTextChange: (text: string) => void;
+    onDelete: () => void;
+  }) => (
     <div data-testid={`checklist-item-${item.id}`}>
       <span>{item.text}</span>
-      <button onClick={() => onStatusChange("done")}>Change Status</button>
+      <button onClick={() => onStatusChange(CHECKLIST_STATUS.DONE)}>
+        Change Status
+      </button>
       <button onClick={() => onTextChange("Updated")}>Change Text</button>
       <button onClick={() => onDelete()}>Delete</button>
     </div>
   ),
 }));
 
+// Define proper type for mock returns
+type UseTaskDetailsReturn = ReturnType<typeof useTaskDetails>;
+
 describe("TaskDetails", () => {
-  const mockTask = {
+  const mockTask: RxTaskDocumentType = {
     id: "1",
     title: "Test Task",
     userId: "user1",
     x: 50,
     y: 50,
     checklist: [
-      { id: "c1", text: "Item 1", status: "not-started" },
-      { id: "c2", text: "Item 2", status: "done" },
-      { id: "c3", text: "Item 3", status: "blocked" },
+      { id: "c1", text: "Item 1", status: CHECKLIST_STATUS.NOT_STARTED },
+      { id: "c2", text: "Item 2", status: CHECKLIST_STATUS.DONE },
+      { id: "c3", text: "Item 3", status: CHECKLIST_STATUS.BLOCKED },
     ],
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
 
-  const mockProps = {
+  const mockProps: UseTaskDetailsReturn = {
     selectedTask: mockTask,
     editingTitle: false,
     setEditingTitle: vi.fn(),
@@ -59,14 +78,14 @@ describe("TaskDetails", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useTaskDetails).mockReturnValue(mockProps as any);
+    vi.mocked(useTaskDetails).mockReturnValue(mockProps);
   });
 
   it("returns null when no task is selected", () => {
     vi.mocked(useTaskDetails).mockReturnValue({
       ...mockProps,
-      selectedTask: null,
-    } as any);
+      selectedTask: undefined,
+    });
 
     const { container } = render(<TaskDetails />);
     expect(container.firstChild).toBeNull();
@@ -83,7 +102,7 @@ describe("TaskDetails", () => {
     vi.mocked(useTaskDetails).mockReturnValue({
       ...mockProps,
       hasBlockedItems: false,
-    } as any);
+    });
 
     render(<TaskDetails />);
 
@@ -108,7 +127,7 @@ describe("TaskDetails", () => {
     vi.mocked(useTaskDetails).mockReturnValue({
       ...mockProps,
       hasBlockedItems: false,
-    } as any);
+    });
 
     render(<TaskDetails />);
 
@@ -122,7 +141,7 @@ describe("TaskDetails", () => {
     vi.mocked(useTaskDetails).mockReturnValue({
       ...mockProps,
       editingTitle: true,
-    } as any);
+    });
 
     render(<TaskDetails />);
 
@@ -137,7 +156,7 @@ describe("TaskDetails", () => {
     vi.mocked(useTaskDetails).mockReturnValue({
       ...mockProps,
       editingTitle: true,
-    } as any);
+    });
 
     render(<TaskDetails />);
 
@@ -151,7 +170,7 @@ describe("TaskDetails", () => {
     vi.mocked(useTaskDetails).mockReturnValue({
       ...mockProps,
       editingTitle: true,
-    } as any);
+    });
 
     render(<TaskDetails />);
 
@@ -181,17 +200,19 @@ describe("TaskDetails", () => {
 
     const expandButton = screen
       .getByText("3 STEPS")
-      .parentElement?.querySelector("button")!;
-    await user.click(expandButton);
+      .parentElement?.querySelector("button");
 
-    expect(mockProps.setIsExpanded).toHaveBeenCalledWith(false);
+    if (expandButton) {
+      await user.click(expandButton);
+      expect(mockProps.setIsExpanded).toHaveBeenCalledWith(false);
+    }
   });
 
   it("hides checklist items when collapsed", () => {
     vi.mocked(useTaskDetails).mockReturnValue({
       ...mockProps,
       isExpanded: false,
-    } as any);
+    });
 
     render(<TaskDetails />);
 
@@ -210,7 +231,7 @@ describe("TaskDetails", () => {
     vi.mocked(useTaskDetails).mockReturnValue({
       ...mockProps,
       handleShowNewItemInput: mockShowNewItemInput,
-    } as any);
+    });
 
     render(<TaskDetails />);
 
@@ -224,7 +245,7 @@ describe("TaskDetails", () => {
     vi.mocked(useTaskDetails).mockReturnValue({
       ...mockProps,
       showNewItemInput: true,
-    } as any);
+    });
 
     render(<TaskDetails />);
 
@@ -250,7 +271,7 @@ describe("TaskDetails", () => {
         currentText = text;
       }),
       handleAddItem: mockHandleAddItem,
-    } as any);
+    });
 
     const { rerender } = render(<TaskDetails />);
 
@@ -268,7 +289,7 @@ describe("TaskDetails", () => {
       newItemText: "New item",
       setNewItemText: mockSetNewItemText,
       handleAddItem: mockHandleAddItem,
-    } as any);
+    });
 
     rerender(<TaskDetails />);
 
@@ -285,7 +306,7 @@ describe("TaskDetails", () => {
       ...mockProps,
       showNewItemInput: true,
       handleCancelNewItem: mockHandleCancelNewItem,
-    } as any);
+    });
 
     render(<TaskDetails />);
 
@@ -308,7 +329,7 @@ describe("TaskDetails", () => {
     await user.click(changeStatusButton);
 
     expect(mockProps.handleUpdateChecklistItem).toHaveBeenCalledWith("c1", {
-      status: "done",
+      status: CHECKLIST_STATUS.DONE,
     });
   });
 

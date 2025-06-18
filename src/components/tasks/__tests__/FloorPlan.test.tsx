@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { FloorPlan } from "../FloorPlan";
 import { useFloorPlan } from "@/hooks/useFloorPlan";
 import { useZoom } from "@/hooks/useZoom";
+import type { RxTaskDocumentType } from "@/types/db.types";
 
 // Mock the custom hooks
 vi.mock("@/hooks/useFloorPlan");
@@ -14,8 +15,12 @@ vi.mock("../ZoomControls", () => ({
   ZoomControls: vi.fn(() => null),
 }));
 
+// Define proper types for mock returns
+type UseFloorPlanReturn = ReturnType<typeof useFloorPlan>;
+type UseZoomReturn = ReturnType<typeof useZoom>;
+
 describe("FloorPlan", () => {
-  const mockFloorPlanProps = {
+  const mockFloorPlanProps: UseFloorPlanReturn = {
     containerRef: { current: null },
     isAddingTask: false,
     tempMarker: null,
@@ -25,19 +30,28 @@ describe("FloorPlan", () => {
     tasks: [
       {
         id: "1",
+        userId: "test-user",
         title: "Test Task 1",
         x: 25,
         y: 30,
-        checklist: [{ status: "done" }, { status: "not-started" }],
+        checklist: [
+          { id: "c1", text: "Item 1", status: "done" },
+          { id: "c2", text: "Item 2", status: "not-started" },
+        ],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
       },
       {
         id: "2",
+        userId: "test-user",
         title: "Test Task 2",
         x: 75,
         y: 60,
         checklist: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
       },
-    ],
+    ] as RxTaskDocumentType[],
     selectedTaskId: null,
     setSelectedTaskId: vi.fn(),
     hoveredTaskId: null,
@@ -46,12 +60,9 @@ describe("FloorPlan", () => {
     handleCreateTask: vi.fn(),
     handleCancelTask: vi.fn(),
     toggleAddingMode: vi.fn(),
-    handleTouchStart: vi.fn(),
-    handleTouchMove: vi.fn(),
-    handleTouchEnd: vi.fn(),
   };
 
-  const mockZoomProps = {
+  const mockZoomProps: UseZoomReturn = {
     zoomLevel: 1,
     setZoomLevel: vi.fn(),
     handleZoomIn: vi.fn(),
@@ -63,7 +74,7 @@ describe("FloorPlan", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useFloorPlan).mockReturnValue(mockFloorPlanProps as any);
+    vi.mocked(useFloorPlan).mockReturnValue(mockFloorPlanProps);
     vi.mocked(useZoom).mockReturnValue(mockZoomProps);
   });
 
@@ -87,7 +98,7 @@ describe("FloorPlan", () => {
     vi.mocked(useFloorPlan).mockReturnValue({
       ...mockFloorPlanProps,
       floorPlanImage: null,
-    } as any);
+    });
 
     render(<FloorPlan />);
 
@@ -118,7 +129,7 @@ describe("FloorPlan", () => {
     vi.mocked(useFloorPlan).mockReturnValue({
       ...mockFloorPlanProps,
       isAddingTask: true,
-    } as any);
+    });
 
     render(<FloorPlan />);
 
@@ -145,7 +156,7 @@ describe("FloorPlan", () => {
       ...mockFloorPlanProps,
       isAddingTask: true,
       tempMarker: { x: 50, y: 50 },
-    } as any);
+    });
 
     const { container } = render(<FloorPlan />);
 
@@ -163,7 +174,7 @@ describe("FloorPlan", () => {
       ...mockFloorPlanProps,
       showTaskModal: true,
       newTaskTitle: "New Task",
-    } as any);
+    });
 
     render(<FloorPlan />);
 
@@ -196,7 +207,7 @@ describe("FloorPlan", () => {
     vi.mocked(useFloorPlan).mockReturnValue({
       ...mockFloorPlanProps,
       isAddingTask: true,
-    } as any);
+    });
 
     rerender(<FloorPlan />);
 
@@ -211,7 +222,7 @@ describe("FloorPlan", () => {
     vi.mocked(useFloorPlan).mockReturnValue({
       ...mockFloorPlanProps,
       isAddingTask: true,
-    } as any);
+    });
 
     render(<FloorPlan />);
 

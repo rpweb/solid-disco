@@ -2,13 +2,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ChecklistItem } from "../ChecklistItem";
-import type { ChecklistItemType } from "@/types/db.types";
+import { CHECKLIST_STATUS, type ChecklistItemType } from "@/types/db.types";
 
 describe("ChecklistItem", () => {
   const mockItem: ChecklistItemType = {
     id: "1",
     text: "Test checklist item",
-    status: "not-started",
+    status: CHECKLIST_STATUS.NOT_STARTED,
   };
 
   const mockProps = {
@@ -55,18 +55,18 @@ describe("ChecklistItem", () => {
     const doneOption = screen.getByRole("button", { name: /done/i });
     await user.click(doneOption);
 
-    expect(mockProps.onStatusChange).toHaveBeenCalledWith("done");
+    expect(mockProps.onStatusChange).toHaveBeenCalledWith(
+      CHECKLIST_STATUS.DONE
+    );
   });
 
   it("shows current status as selected in dropdown", async () => {
     const user = userEvent.setup();
-    const inProgressItem = { ...mockItem, status: "in-progress" as const };
-    render(
-      <ChecklistItem
-        {...mockProps}
-        item={inProgressItem as ChecklistItemType}
-      />
-    );
+    const inProgressItem = {
+      ...mockItem,
+      status: CHECKLIST_STATUS.IN_PROGRESS,
+    };
+    render(<ChecklistItem {...mockProps} item={inProgressItem} />);
 
     const statusButton = screen.getByRole("button", {
       name: /change status.*in progress/i,
@@ -193,21 +193,49 @@ describe("ChecklistItem", () => {
     expect(deleteButton).toBeInTheDocument();
   });
 
-  it("applies strikethrough style for done items", () => {
-    const doneItem = { ...mockItem, status: "done" as const };
-    render(<ChecklistItem {...mockProps} item={doneItem} />);
+  it("shows line-through style for done items", () => {
+    const doneItem = { ...mockItem, status: CHECKLIST_STATUS.DONE };
+    render(
+      <ChecklistItem
+        item={doneItem}
+        onStatusChange={mockProps.onStatusChange}
+        onTextChange={mockProps.onTextChange}
+        onDelete={mockProps.onDelete}
+      />
+    );
 
-    const text = screen.getByText("Test checklist item");
-    expect(text).toHaveClass("line-through");
-    expect(text).toHaveClass("text-gray-500");
+    const textElement = screen.getByText(mockItem.text);
+    expect(textElement).toHaveClass("line-through", "text-gray-500");
   });
 
   it("shows status label for non 'not-started' items", () => {
-    const blockedItem = { ...mockItem, status: "blocked" as const };
+    const blockedItem = { ...mockItem, status: CHECKLIST_STATUS.BLOCKED };
     render(
-      <ChecklistItem {...mockProps} item={blockedItem as ChecklistItemType} />
+      <ChecklistItem
+        item={blockedItem}
+        onStatusChange={mockProps.onStatusChange}
+        onTextChange={mockProps.onTextChange}
+        onDelete={mockProps.onDelete}
+      />
     );
 
     expect(screen.getByText("Blocked")).toBeInTheDocument();
+  });
+
+  it("shows appropriate background color for blocked status", () => {
+    const blockedItem = { ...mockItem, status: CHECKLIST_STATUS.BLOCKED };
+    render(
+      <ChecklistItem
+        item={blockedItem}
+        onStatusChange={mockProps.onStatusChange}
+        onTextChange={mockProps.onTextChange}
+        onDelete={mockProps.onDelete}
+      />
+    );
+
+    const statusButton = screen.getByRole("button", {
+      name: /change status.*blocked/i,
+    });
+    expect(statusButton).toHaveClass("bg-red-100", "text-red-600");
   });
 });

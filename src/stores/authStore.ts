@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware";
 import { getDatabase } from "@/db/database";
 import type { RxUserDocument } from "@/types/db.types";
 
-interface AuthState {
+export interface AuthState {
   currentUser: { id: string; name: string } | null;
   isLoading: boolean;
   error: string | null;

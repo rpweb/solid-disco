@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-interface UIState {
+export interface UIState {
   isAddingTask: boolean;
   selectedTaskId: string | null;
   hoveredTaskId: string | null;

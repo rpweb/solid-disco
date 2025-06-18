@@ -18,7 +18,7 @@ export const Dashboard: React.FC = () => {
     return () => {
       cleanup();
     };
-  }, [currentUser?.id]);
+  }, [currentUser, initializeTasks, cleanup]);
 
   return (
     <div>

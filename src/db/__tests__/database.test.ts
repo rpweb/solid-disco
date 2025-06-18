@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createRxDatabase } from "rxdb";
 import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
@@ -22,9 +23,10 @@ vi.mock("rxdb/plugins/query-builder", () => ({
 }));
 
 describe("database", () => {
+  const mockAddCollections = vi.fn();
   const mockDb = {
-    addCollections: vi.fn(),
-  };
+    addCollections: mockAddCollections,
+  } as any;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -32,14 +34,15 @@ describe("database", () => {
     vi.resetModules();
 
     // Setup default mock implementations
-    vi.mocked(createRxDatabase).mockResolvedValue(mockDb as any);
+    vi.mocked(createRxDatabase).mockResolvedValue(mockDb);
     vi.mocked(getRxStorageDexie).mockReturnValue({} as any);
   });
 
   afterEach(() => {
     // Clean up window.db if set
-    if ((window as any).db) {
-      delete (window as any).db;
+    const windowWithDb = window as Window & { db?: unknown };
+    if (windowWithDb.db) {
+      delete windowWithDb.db;
     }
   });
 
@@ -74,7 +77,7 @@ describe("database", () => {
 
     await getDatabase();
 
-    expect(mockDb.addCollections).toHaveBeenCalledWith({
+    expect(mockAddCollections).toHaveBeenCalledWith({
       users: {
         schema: expect.objectContaining({
           version: 0,
@@ -135,7 +138,8 @@ describe("database", () => {
 
     await getDatabase();
 
-    expect((window as any).db).toBe(mockDb);
+    const windowWithDb = window as Window & { db?: unknown };
+    expect(windowWithDb.db).toBe(mockDb);
 
     vi.unstubAllEnvs();
   });
@@ -148,7 +152,8 @@ describe("database", () => {
 
     await getDatabase();
 
-    expect((window as any).db).toBeUndefined();
+    const windowWithDb = window as Window & { db?: unknown };
+    expect(windowWithDb.db).toBeUndefined();
 
     vi.unstubAllEnvs();
   });
@@ -164,7 +169,7 @@ describe("database", () => {
 
   it("handles collection creation errors", async () => {
     const collectionError = new Error("Failed to add collections");
-    mockDb.addCollections.mockRejectedValueOnce(collectionError);
+    mockAddCollections.mockRejectedValueOnce(collectionError);
 
     const { getDatabase } = await import("../database");
 
@@ -181,7 +186,7 @@ describe("database", () => {
     await expect(getDatabase()).rejects.toThrow("Temporary error");
 
     // Second call succeeds
-    vi.mocked(createRxDatabase).mockResolvedValueOnce(mockDb as any);
+    vi.mocked(createRxDatabase).mockResolvedValueOnce(mockDb);
 
     const db = await getDatabase();
     expect(db).toBe(mockDb);
@@ -192,7 +197,7 @@ describe("database", () => {
     const { getDatabase } = await import("../database");
 
     // First call fails with DB9
-    const db9Error = { code: "DB9" };
+    const db9Error = { code: "DB9" } as Error & { code: string };
     vi.mocked(createRxDatabase).mockRejectedValueOnce(db9Error);
 
     const promise = getDatabase();

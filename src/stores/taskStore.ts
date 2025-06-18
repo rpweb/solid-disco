@@ -6,7 +6,7 @@ import { generateDefaultChecklist } from "@/utils/constants";
 import { Subscription } from "rxjs";
 import { useAuthStore } from "@/stores/authStore";
 
-interface TaskState {
+export interface TaskState {
   tasks: RxTaskDocumentType[];
   isLoading: boolean;
   error: string | null;
@@ -75,9 +75,14 @@ export const useTaskStore = create<TaskState>()(
         });
 
         set({ subscription: newSubscription, isLoading: false });
-      } catch (error: any) {
+      } catch (error) {
         // Retry once if we get DB9 error (database already exists)
-        if (error?.code === "DB9") {
+        if (
+          error &&
+          typeof error === "object" &&
+          "code" in error &&
+          error.code === "DB9"
+        ) {
           setTimeout(() => get().initializeTasks(userId), 100);
           return;
         }

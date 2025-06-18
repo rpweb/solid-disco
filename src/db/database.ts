@@ -63,7 +63,10 @@ async function _createDatabase(): Promise<RxDatabase<RxDatabaseCollections>> {
 
   // In dev mode, expose database to window for debugging
   if (import.meta.env.DEV) {
-    (window as any).db = db;
+    const windowWithDb = window as Window & {
+      db?: RxDatabase<RxDatabaseCollections>;
+    };
+    windowWithDb.db = db;
   }
 
   return db;

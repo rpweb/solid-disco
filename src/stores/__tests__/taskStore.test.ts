@@ -4,13 +4,47 @@ import { useTaskStore } from "../taskStore";
 import { getDatabase } from "@/db/database";
 import { useAuthStore } from "@/stores/authStore";
 import type { Subscription } from "rxjs";
+import type { RxDatabase, RxDocument } from "rxdb";
+import type {
+  RxDatabaseCollections,
+  RxTaskDocumentType,
+  ChecklistItemType,
+} from "@/types/db.types";
 
 // Mock dependencies
 vi.mock("@/db/database");
 vi.mock("@/stores/authStore");
 
+// Mock types
+type MockRxTaskDocument = RxDocument<RxTaskDocumentType> & {
+  toJSON: () => RxTaskDocumentType;
+};
+
+type MockTaskDoc = {
+  patch: ReturnType<typeof vi.fn>;
+  remove: ReturnType<typeof vi.fn>;
+  checklist: ChecklistItemType[];
+};
+
+type MockDbMethods = {
+  tasks: {
+    find: (selector?: unknown) => {
+      exec: () => Promise<MockRxTaskDocument[]>;
+      $: {
+        subscribe: (
+          callback: (results: MockRxTaskDocument[]) => void
+        ) => Subscription;
+      };
+    };
+    findOne: (id: string) => {
+      exec: () => Promise<MockTaskDoc | null>;
+    };
+    insert: ReturnType<typeof vi.fn>;
+  };
+};
+
 describe("taskStore", () => {
-  const mockTasks = [
+  const mockTasks: RxTaskDocumentType[] = [
     {
       id: "1",
       userId: "user1",
@@ -33,9 +67,9 @@ describe("taskStore", () => {
     },
   ];
 
-  const mockSubscription: Subscription = {
+  const mockSubscription = {
     unsubscribe: vi.fn(),
-  } as any;
+  } as unknown as Subscription;
 
   const mockQuery = {
     exec: vi.fn().mockResolvedValue(
@@ -44,28 +78,31 @@ describe("taskStore", () => {
       }))
     ),
     $: {
-      subscribe: vi.fn((callback) => {
+      subscribe: vi.fn((callback: (results: MockRxTaskDocument[]) => void) => {
         // Immediately call with initial data
         callback(
-          mockTasks.map((task) => ({
-            toJSON: () => task,
-          }))
+          mockTasks.map(
+            (task) =>
+              ({
+                toJSON: () => task,
+              } as MockRxTaskDocument)
+          )
         );
         return mockSubscription;
       }),
     },
   };
 
-  const mockTaskDoc = {
+  const mockTaskDoc: MockTaskDoc = {
     patch: vi.fn(),
     remove: vi.fn(),
     checklist: mockTasks[0].checklist,
   };
 
-  const mockDb = {
+  const mockDb: MockDbMethods = {
     tasks: {
       find: vi.fn().mockReturnValue(mockQuery),
-      findOne: vi.fn((id) => ({
+      findOne: vi.fn((id: string) => ({
         exec: vi.fn().mockResolvedValue(id === "1" ? mockTaskDoc : null),
       })),
       insert: vi.fn(),
@@ -74,11 +111,15 @@ describe("taskStore", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(getDatabase).mockResolvedValue(mockDb as any);
+    vi.mocked(getDatabase).mockResolvedValue(
+      mockDb as unknown as RxDatabase<RxDatabaseCollections>
+    );
     // Mock the static getState method on useAuthStore
-    (useAuthStore as any).getState = vi.fn(() => ({
+    const mockGetState = vi.fn(() => ({
       currentUser: { id: "user1" },
     }));
+    (useAuthStore as unknown as { getState: typeof mockGetState }).getState =
+      mockGetState;
   });
 
   afterEach(() => {
@@ -134,10 +175,12 @@ describe("taskStore", () => {
 
     it("retries on DB9 error", async () => {
       vi.useFakeTimers();
-      const db9Error = { code: "DB9" };
+      const db9Error = { code: "DB9" } as Error & { code: string };
       vi.mocked(getDatabase)
         .mockRejectedValueOnce(db9Error)
-        .mockResolvedValueOnce(mockDb as any);
+        .mockResolvedValueOnce(
+          mockDb as unknown as RxDatabase<RxDatabaseCollections>
+        );
 
       const { result } = renderHook(() => useTaskStore());
 
@@ -173,9 +216,12 @@ describe("taskStore", () => {
       const subscribeCallback = mockQuery.$.subscribe.mock.calls[0][0];
       act(() => {
         subscribeCallback(
-          updatedTasks.map((task) => ({
-            toJSON: () => task,
-          }))
+          updatedTasks.map(
+            (task) =>
+              ({
+                toJSON: () => task,
+              } as MockRxTaskDocument)
+          )
         );
       });
 
@@ -232,8 +278,8 @@ describe("taskStore", () => {
       await act(async () => {
         await result.current.createTask({
           title: "New Task",
-          x: 21.509999999999999,
-          y: 33.089999999999999,
+          x: 21.51,
+          y: 33.09,
         });
       });
 
@@ -264,7 +310,9 @@ describe("taskStore", () => {
     });
 
     it("handles error when user not logged in", async () => {
-      (useAuthStore as any).getState = vi.fn(() => ({ currentUser: null }));
+      const mockGetState = vi.fn(() => ({ currentUser: null }));
+      (useAuthStore as unknown as { getState: typeof mockGetState }).getState =
+        mockGetState;
 
       const { result } = renderHook(() => useTaskStore());
 
