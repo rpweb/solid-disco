@@ -126,6 +126,7 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({
         onDelete={onDelete}
         itemName={item.text}
         confirmMessage="Delete this item?"
+        className="ml-4 text-red-600 hover:text-red-800 cursor-pointer p-1"
       />
     </div>
   );
