@@ -1,6 +1,5 @@
 import type { RxCollection, RxDocument } from "rxdb";
 
-// Checklist item status values as const
 export const CHECKLIST_STATUS = {
   NOT_STARTED: "not-started",
   IN_PROGRESS: "in-progress",
@@ -9,7 +8,6 @@ export const CHECKLIST_STATUS = {
   DONE: "done",
 } as const;
 
-// Type for checklist item status
 export type ChecklistItemStatus =
   (typeof CHECKLIST_STATUS)[keyof typeof CHECKLIST_STATUS];
 

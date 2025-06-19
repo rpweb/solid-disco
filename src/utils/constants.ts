@@ -9,7 +9,6 @@ const DEFAULT_CHECKLIST_ITEMS = [
   { text: "Cleanup", status: CHECKLIST_STATUS.NOT_STARTED },
 ];
 
-// Generate default checklist with unique IDs
 export const generateDefaultChecklist = (): ChecklistItemType[] => {
   return DEFAULT_CHECKLIST_ITEMS.map((item) => ({
     ...item,

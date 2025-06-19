@@ -6,7 +6,6 @@ export interface UIState {
   hoveredTaskId: string | null;
   floorPlanImage: string | null;
 
-  // Actions
   setIsAddingTask: (value: boolean) => void;
   setSelectedTaskId: (id: string | null) => void;
   setHoveredTaskId: (id: string | null) => void;
@@ -17,7 +16,7 @@ export const useUIStore = create<UIState>()((set) => ({
   isAddingTask: false,
   selectedTaskId: null,
   hoveredTaskId: null,
-  floorPlanImage: "/construction-plan.png", // Default floor plan image
+  floorPlanImage: "/construction-plan.png",
 
   setIsAddingTask: (value) => set({ isAddingTask: value }),
   setSelectedTaskId: (id) => set({ selectedTaskId: id }),

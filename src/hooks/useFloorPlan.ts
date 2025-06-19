@@ -15,7 +15,6 @@ export const useFloorPlan = () => {
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [showTaskModal, setShowTaskModal] = useState(false);
 
-  // Touch handling for tap detection
   const touchStartPosition = useRef<{ x: number; y: number } | null>(null);
   const touchMoved = useRef(false);
 
@@ -33,7 +32,6 @@ export const useFloorPlan = () => {
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
 
-      // Round to 2 decimal places for display purposes
       setTempMarker({
         x: Math.round(x * 100) / 100,
         y: Math.round(y * 100) / 100,
@@ -52,7 +50,6 @@ export const useFloorPlan = () => {
       y: tempMarker.y,
     });
 
-    // Reset state
     setNewTaskTitle("");
     setTempMarker(null);
     setShowTaskModal(false);
@@ -68,7 +65,6 @@ export const useFloorPlan = () => {
   const toggleAddingMode = () => {
     setIsAddingTask(!isAddingTask);
     if (isAddingTask) {
-      // If canceling, clean up
       handleCancelTask();
     }
   };
@@ -128,14 +124,12 @@ export const useFloorPlan = () => {
         }
       }
 
-      // Reset touch tracking
       touchStartPosition.current = null;
       touchMoved.current = false;
     },
     [isAddingTask]
   );
 
-  // Set up touch event listeners
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;

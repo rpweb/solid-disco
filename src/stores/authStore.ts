@@ -8,7 +8,6 @@ export interface AuthState {
   isLoading: boolean;
   error: string | null;
 
-  // Actions
   login: (name: string) => Promise<void>;
   logout: () => void;
   clearError: () => void;
@@ -27,7 +26,6 @@ export const useAuthStore = create<AuthState>()(
         try {
           const db = await getDatabase();
 
-          // Try to find existing user
           const existingUsers = await db.users
             .find({
               selector: { name },
@@ -37,10 +35,8 @@ export const useAuthStore = create<AuthState>()(
           let user: RxUserDocument;
 
           if (existingUsers.length > 0) {
-            // User exists
             user = existingUsers[0];
           } else {
-            // Create new user
             user = await db.users.insert({
               id: crypto.randomUUID(),
               name,

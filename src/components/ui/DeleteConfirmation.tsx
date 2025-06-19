@@ -15,7 +15,6 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
 }) => {
   const confirmRef = useRef<HTMLDivElement>(null);
 
-  // Close confirmation dialog on click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (

@@ -1,6 +1,5 @@
 import { CHECKLIST_STATUS, type ChecklistItemStatus } from "@/types/db.types";
 
-// Status display configuration
 export const STATUS_CONFIG = {
   [CHECKLIST_STATUS.NOT_STARTED]: {
     label: "Not Started",
@@ -54,22 +53,18 @@ export const STATUS_CONFIG = {
   },
 } as const;
 
-// Get status configuration
 export function getStatusConfig(status: ChecklistItemStatus) {
   return STATUS_CONFIG[status];
 }
 
-// Get status label
 export function getStatusLabel(status: ChecklistItemStatus): string {
   return STATUS_CONFIG[status].label;
 }
 
-// Get status color classes for badges
 export function getStatusBadgeClasses(status: ChecklistItemStatus): string {
   return STATUS_CONFIG[status].badgeClasses;
 }
 
-// Get full status classes for buttons/checkboxes
 export function getStatusFullClasses(status: ChecklistItemStatus): string {
   return STATUS_CONFIG[status].fullClasses;
 }

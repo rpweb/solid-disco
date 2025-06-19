@@ -1,5 +1,5 @@
 import React from "react";
-import { useAuthStore } from "../../stores/authStore";
+import { useAuthStore } from "@/stores/authStore";
 import { useNavigate } from "react-router-dom";
 
 export const Header: React.FC = () => {

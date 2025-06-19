@@ -1,6 +1,6 @@
 import React from "react";
 import { useTaskDetails } from "@/hooks/useTaskDetails";
-import { ChecklistItem } from "./ChecklistItem";
+import { ChecklistItem } from "@/components/tasks/ChecklistItem";
 import { Modal } from "@/components/ui/Modal";
 
 export const TaskDetails: React.FC = () => {

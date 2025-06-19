@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { DeleteConfirmation } from "./DeleteConfirmation";
+import { DeleteConfirmation } from "@/components/ui/DeleteConfirmation";
 
 interface DeleteButtonProps {
   onDelete: () => void;

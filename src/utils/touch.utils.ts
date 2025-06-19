@@ -1,10 +1,8 @@
-// Minimal touch event interface for what we actually use
 export interface MinimalTouchEvent {
   touches: TouchList;
   changedTouches: TouchList;
 }
 
-// Helper to set up touch event listeners with minimal event data
 export function setupTouchListeners(
   container: HTMLElement,
   handlers: {

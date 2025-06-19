@@ -1,6 +1,6 @@
 import React from "react";
-import { useTaskStore } from "../../stores/taskStore";
-import { useUIStore } from "../../stores/uiStore";
+import { useTaskStore } from "@/stores/taskStore";
+import { useUIStore } from "@/stores/uiStore";
 import { getStatusBadgeClasses, getStatusLabel } from "@/utils/status.utils";
 import { DeleteButton } from "@/components/ui/DeleteButton";
 

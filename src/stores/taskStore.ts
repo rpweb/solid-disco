@@ -39,13 +39,11 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
     try {
       const db = await getDatabase();
 
-      // Clean up previous subscription
       const { subscription } = get();
       if (subscription) {
         subscription.unsubscribe();
       }
 
-      // Query tasks for current user
       const query = db.tasks.find({
         selector: {
           userId,
@@ -53,7 +51,6 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
         sort: [{ createdAt: "desc" }],
       });
 
-      // Initial load
       const docs = await query.exec();
       set({
         tasks: docs.map((doc) => ({
@@ -62,7 +59,6 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
         })),
       });
 
-      // Subscribe to changes
       const newSubscription = query.$.subscribe((results) => {
         set({
           tasks: results.map((doc) => ({
@@ -74,7 +70,6 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
 
       set({ subscription: newSubscription, isLoading: false });
     } catch (error) {
-      // Retry once if we get DB9 error (database already exists)
       if (
         error &&
         typeof error === "object" &&
@@ -102,7 +97,6 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
     try {
       const db = await getDatabase();
 
-      // Ensure tasks collection is ready
       if (!db.tasks) {
         console.log("Tasks collection not ready, waiting...");
         await new Promise((resolve) => setTimeout(resolve, 100));
@@ -134,7 +128,6 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
       const task = await db.tasks.findOne(id).exec();
 
       if (task) {
-        // Round x and y if they're being updated
         const processedUpdates = { ...updates };
         if (typeof updates.x === "number") {
           processedUpdates.x = parseFloat(

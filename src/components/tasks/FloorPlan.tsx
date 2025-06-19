@@ -1,11 +1,11 @@
 import React from "react";
 import { useFloorPlan } from "@/hooks/useFloorPlan";
 import { useZoom } from "@/hooks/useZoom";
-import { TaskMarker } from "./TaskMarker";
-import { NewTaskModal } from "./NewTaskModal";
-import { FloorPlanToolbar } from "./FloorPlanToolbar";
-import { FloorPlanImage } from "./FloorPlanImage";
-import { TempMarker } from "./TempMarker";
+import { TaskMarker } from "@/components/tasks/TaskMarker";
+import { NewTaskModal } from "@/components/tasks/NewTaskModal";
+import { FloorPlanToolbar } from "@/components/tasks/FloorPlanToolbar";
+import { FloorPlanImage } from "@/components/tasks/FloorPlanImage";
+import { TempMarker } from "@/components/tasks/TempMarker";
 
 export const FloorPlan: React.FC = () => {
   const {
@@ -26,7 +26,6 @@ export const FloorPlan: React.FC = () => {
     toggleAddingMode,
   } = useFloorPlan();
 
-  // Zoom functionality
   const {
     zoomLevel,
     handleZoomIn,
@@ -63,7 +62,6 @@ export const FloorPlan: React.FC = () => {
             ${zoomLevel === 1 ? "w-full min-w-full xl:max-w-full" : ""}
           `}
           style={{
-            // Dynamic values that can't be expressed in Tailwind
             ...(zoomLevel === 1
               ? { width: "max(100%, 1040px)" }
               : {
@@ -84,7 +82,6 @@ export const FloorPlan: React.FC = () => {
               }
             `}
             style={{
-              // Only dynamic transform values that can't be done with Tailwind
               transform: zoomLevel === 1 ? "none" : `scale(${zoomLevel})`,
             }}
             onClick={handleFloorPlanClick}

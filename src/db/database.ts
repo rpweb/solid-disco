@@ -1,6 +1,5 @@
 import { createRxDatabase, addRxPlugin, type RxDatabase } from "rxdb";
 
-// Import required plugins
 import { RxDBQueryBuilderPlugin } from "rxdb/plugins/query-builder";
 import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
 import { wrappedValidateAjvStorage } from "rxdb/plugins/validate-ajv";
@@ -8,7 +7,6 @@ import { wrappedValidateAjvStorage } from "rxdb/plugins/validate-ajv";
 import { userSchema, taskSchema } from "./schemas";
 import type { RxDatabaseCollections } from "@/types/db.types";
 
-// Import only in development
 if (import.meta.env.DEV) {
   import("rxdb/plugins/dev-mode")
     .then((module) => {
@@ -19,10 +17,8 @@ if (import.meta.env.DEV) {
     });
 }
 
-// Add plugins
 addRxPlugin(RxDBQueryBuilderPlugin);
 
-// Database instance
 let dbPromise: Promise<RxDatabase<RxDatabaseCollections>> | null = null;
 
 export async function getDatabase(): Promise<
